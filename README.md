@@ -1,2 +1,2 @@
-# Websites Server Repository
+# GitHub Pages Repository
 Serves various static websites
