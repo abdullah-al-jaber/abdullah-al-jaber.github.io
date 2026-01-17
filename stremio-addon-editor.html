@@ -9,6 +9,33 @@
         <script type="module" src="/release/js/stremio-addon-editor.js"></script>
     </head>
     <body>
-        Hello Buddy
+        <div id="wrapper">
+            <div id="title-box">
+                <span class="title">Stremio Addon Editor</span>
+            </div>
+            <div id="login-box">
+                <form id="login" autocomplete="on">
+                    <div id="email-box">
+                        <i class="fa-fw fa-duotone fa-solid fa-envelope"></i>
+                        <input type="email" id="email" required="true" />
+                    </div>
+                    <div id="password-box">
+                        <i class="fa-fw fa-duotone fa-solid fa-lock"></i>
+                        <input type="text" id="password" required="true" />
+                    </div>
+                    <button id="login" type="submit">
+                        <i class="fa-fw fa-duotone fa-solid fa-arrow-right-to-arc"></i>
+                        <span class="text">Login & Load Addon</span>
+                    </button>
+                </form>
+            </div>
+            <div id="addon-box">
+                <textarea id="addon" cols="30" rows="10"></textarea>
+                <button id="save">
+                    <i class="fa-fw fa-duotone fa-solid fa-floppy-disk"></i>
+                    <span class="text">Save & Sync Addon</span>
+                </button>
+            </div>
+        </div>
     </body>
 </html>
