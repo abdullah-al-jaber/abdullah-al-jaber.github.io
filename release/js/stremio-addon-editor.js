@@ -9,6 +9,14 @@ const post_json = async (url, body) => {
     });
     return await response.json();
 };
+const valid_json = (json) => {
+    try {
+        JSON.parse(json);
+        return true;
+    } catch {
+        return false;
+    }
+};
 const login_box = document.querySelector("div#login-box");
 const addon_box = document.querySelector("div#addon-box");
 login_box.classList.remove("hidden");
@@ -44,11 +52,7 @@ login_button.onclick = async () => {
 };
 save_button.onclick = async () => {
     if (stremio_info.auth_key == undefined) return window.alert("Failure in [Login] !");
-    try {
-        JSON.parse(addon_textarea.value);
-    } catch {
-        return window.alert("Error in [ADDON JSON DATA] !");
-    }
+    if (!valid_json(addon_textarea.value)) return window.alert("Error in [ADDON JSON DATA] !");
     if (!window.confirm("Confirm [Save & Sync Addon] ?")) return null;
     let success = (
         await post_json(`https://${stremio_info.api_host}/addonCollectionSet`, {
