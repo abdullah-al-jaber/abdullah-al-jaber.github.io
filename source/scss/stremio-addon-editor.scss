@@ -1,6 +1,14 @@
 @import url(/release/css/google-font.css);
 @import url(/release/css/font-awesome.css);
 
+body {
+    font-family: "Montserrat", sans-serif;
+}
+
+input {
+font-family: "Inconsolata", monospace;
+}
+
 @media (prefers-color-scheme: light) {
     :root {
         background-color: #fff;
