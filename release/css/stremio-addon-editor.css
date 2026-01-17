@@ -1,14 +1,148 @@
+@import url(/release/css/sanitize.css);
 @import url(/release/css/google-font.css);
 @import url(/release/css/font-awesome.css);
-@media (prefers-color-scheme: dark) {
-    :root {
-        background-color: #000;
-        color: #fff;
-    }
-}
 @media (prefers-color-scheme: light) {
     :root {
-        background-color: #fff;
-        color: #000;
+        --body-background-color: #f4f4f5;
+        --wrapper-background-color: #ffffff;
+        --input-box-background-color: #ededee;
+        --input-box-focus-background-color: #e2e2e4;
+        --button-background-color: #e2e2e4;
+        --button-focus-background-color: #d6d6d9;
+        --textarea-background-color: #ededee;
+        --text-color: #2b2b2f;
     }
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --body-background-color: #121212;
+        --wrapper-background-color: #1a1a1a;
+        --input-box-background-color: #242424;
+        --input-box-focus-background-color: #2e2e2e;
+        --button-background-color: #2e2e2e;
+        --button-focus-background-color: #383838;
+        --textarea-background-color: #242424;
+        --text-color: #e6e6e6;
+    }
+}
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    border-radius: 5px;
+}
+
+body {
+    min-height: 100vh;
+    color: var(--text-color);
+    background-color: var(--body-background-color);
+    font-family: "Montserrat", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+input {
+    padding: 5px;
+    font-family: "Inconsolata", monospace;
+}
+
+span.title {
+    font-weight: 600;
+}
+
+div#wrapper {
+    width: clamp(350px, 90%, 600px);
+    padding: 20px;
+    background-color: var(--wrapper-background-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+}
+div#wrapper > * {
+    width: 100%;
+}
+div#wrapper > *.hidden {
+    display: none;
+}
+div#wrapper > div#title-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+div#wrapper > div#title-box span.title {
+    border-bottom: 5px double var(--text-color);
+    border-radius: 0px;
+}
+div#wrapper > div#login-box form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+}
+div#wrapper > div#addon-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+}
+div#wrapper > div#addon-box textarea {
+    width: 100%;
+    height: clamp(350px, 40vh, 600px);
+    padding: 10px;
+    color: var(--text-color);
+    background-color: var(--textarea-background-color);
+    white-space: nowrap;
+}
+
+div.input-box {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 10px;
+    padding: 10px;
+    background-color: var(--input-box-background-color);
+    transition: background-color 0.5s ease-in-out;
+}
+div.input-box i.fa-fw {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    display: inline-flex;
+    flex-grow: 0;
+}
+div.input-box input {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-color);
+    font-weight: 600;
+    flex-grow: 1;
+}
+div.input-box:focus-within {
+    background-color: var(--input-box-focus-background-color);
+}
+
+button {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    border: none;
+    outline: none;
+    gap: 10px;
+    padding: 10px;
+    color: var(--text-color);
+    background-color: var(--button-background-color);
+    transition: background-color 0.5s ease-in-out;
+}
+button:focus {
+    background-color: var(--button-focus-background-color);
 }

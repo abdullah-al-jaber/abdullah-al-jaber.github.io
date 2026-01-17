@@ -6,35 +6,29 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="shortcut icon" href="/asset/favicon/stremio-addon-editor.ico" type="image/x-icon" />
         <link rel="stylesheet" href="/release/css/stremio-addon-editor.css" />
-        <script type="module" src="/release/js/stremio-addon-editor.js"></script>
+        <script type="module" src="/release/js/stremio-addon-editor.js" defer></script>
     </head>
     <body>
         <div id="wrapper">
             <div id="title-box">
                 <span class="title">Stremio Addon Editor</span>
             </div>
-            <div id="login-box">
-                <form id="login" autocomplete="on">
-                    <div id="email-box">
+            <div id="login-box" class="hidden">
+                <form autocomplete="on">
+                    <div class="input-box">
                         <i class="fa-fw fa-duotone fa-solid fa-envelope"></i>
-                        <input type="email" id="email" required="true" />
+                        <input type="email" name="email" placeholder="Email Address" required />
                     </div>
-                    <div id="password-box">
+                    <div class="input-box">
                         <i class="fa-fw fa-duotone fa-solid fa-lock"></i>
-                        <input type="text" id="password" required="true" />
+                        <input type="text" name="password" placeholder="Password" required />
                     </div>
-                    <button id="login" type="submit">
-                        <i class="fa-fw fa-duotone fa-solid fa-arrow-right-to-arc"></i>
-                        <span class="text">Login & Load Addon</span>
-                    </button>
+                    <button id="login" type="submit">Login & Load Addon</button>
                 </form>
             </div>
-            <div id="addon-box">
-                <textarea id="addon" cols="30" rows="10"></textarea>
-                <button id="save">
-                    <i class="fa-fw fa-duotone fa-solid fa-floppy-disk"></i>
-                    <span class="text">Save & Sync Addon</span>
-                </button>
+            <div id="addon-box" class="hidden">
+                <textarea id="addon" placeholder="[ADDON JSON DATA]"></textarea>
+                <button id="save">Save & Sync Addon</button>
             </div>
         </div>
     </body>
