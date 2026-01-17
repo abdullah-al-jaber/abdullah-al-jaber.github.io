@@ -64,9 +64,6 @@ div#wrapper {
 div#wrapper > * {
     width: 100%;
 }
-div#wrapper > *.hidden {
-    display: none;
-}
 div#wrapper > div#title-box {
     display: flex;
     justify-content: center;
@@ -83,6 +80,10 @@ div#wrapper > div#login-box form {
     flex-direction: column;
     gap: 10px;
 }
+div#wrapper > div#login-box.hidden {
+    display: none;
+    background: red;
+}
 div#wrapper > div#addon-box {
     display: flex;
     justify-content: center;
@@ -97,6 +98,10 @@ div#wrapper > div#addon-box textarea {
     color: var(--text-color);
     background-color: var(--textarea-background-color);
     white-space: nowrap;
+}
+div#wrapper > div#addon-box.hidden {
+    display: none;
+    background: red;
 }
 
 div.input-box {

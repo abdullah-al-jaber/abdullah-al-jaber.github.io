@@ -68,10 +68,6 @@ div#wrapper {
 
     > * {
         width: 100%;
-
-        &.hidden {
-            display: none;
-        }
     }
 
     > div#title-box {
@@ -89,6 +85,11 @@ div#wrapper {
             flex-direction: column;
             gap: 10px;
         }
+
+        &.hidden {
+            display: none;
+            background: red;
+        }
     }
 
     > div#addon-box {
@@ -103,6 +104,11 @@ div#wrapper {
             color: var(--text-color);
             background-color: var(--textarea-background-color);
             white-space: nowrap;
+        }
+
+        &.hidden {
+            display: none;
+            background: red;
         }
     }
 }

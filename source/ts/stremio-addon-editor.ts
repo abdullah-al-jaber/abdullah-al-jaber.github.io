@@ -29,35 +29,44 @@ document.querySelectorAll("form").forEach((form) => {
 });
 
 login_button.onclick = async () => {
-    const login_form = document.querySelector("div#login-box") as HTMLFormElement;
+    const email_input = document.querySelector("input#email") as HTMLInputElement;
+    const password_input = document.querySelector("input#password") as HTMLInputElement;
     let auth_key = (
         await post_json(`https://${stremio_info.api_host}/login`, {
             type: "Login",
-            email: login_form.email,
-            password: login_form.password,
+            email: email_input.value,
+            password: password_input.value,
         })
     ).result?.authKey;
     if (auth_key == undefined) return window.alert("Failure in [Login] !");
-    let addon = (
+    let addons = (
         await post_json(`https://${stremio_info.api_host}/addonCollectionGet`, {
             type: "AddonCollectionGet",
             authKey: auth_key,
         })
     ).result?.addons;
-    if (addon == undefined) return window.alert("Failure in [Load Addon] !");
+    if (addons == undefined) return window.alert("Failure in [Load Addon] !");
     stremio_info.auth_key = auth_key;
+    addon_textarea.value = JSON.stringify(addons, null, 4);
     login_box.classList.add("hidden");
     addon_box.classList.remove("hidden");
 };
 
 save_button.onclick = async () => {
     if (stremio_info.auth_key == undefined) return window.alert("Failure in [Login] !");
+    try {
+        JSON.parse(addon_textarea.value);
+    } catch {
+        return window.alert("Error in [ADDON JSON DATA] !");
+    }
+    if (!window.confirm("Confirm [Save & Sync Addon] ?")) return null;
     let success = (
         await post_json(`https://${stremio_info.api_host}/addonCollectionSet`, {
             type: "AddonCollectionSet",
             authKey: stremio_info.auth_key,
-            addons: addon_textarea.value,
+            addons: JSON.parse(addon_textarea.value),
         })
     ).result?.success;
-    if (success != true) return window.alert("Failure in [Save & Sync Addon] !");
+    if (success != true) window.alert("Failure in [Save & Sync Addon] !");
+    else window.alert("Success in [Save & Sync Addon]");
 };
