@@ -45,13 +45,13 @@ body {
     min-height: 100vh;
     color: var(--text-color);
     background-color: var(--body-background-color);
-    font-family: "Montserrat", sans-serif;
+    font-family: "QuickSand", sans-serif;
     @include flex-center;
 }
 
 input,
 button {
-    font-family: "Inconsolata", monospace;
+    font-family: "FiraCode", monospace;
 }
 
 span.title {
