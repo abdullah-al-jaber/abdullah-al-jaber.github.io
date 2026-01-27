@@ -1,162 +1,144 @@
-@import url(/release/css/normalize.css);
-@import url(/release/css/google-font.css);
-@import url(/release/css/font-awesome.css);
+@import url("/release/css/normalize.css");
+@import url("/release/css/google-font.css");
+@import url("/release/css/font-awesome.css");
 
-@media (prefers-color-scheme: light) {
-    :root {
-        --body-background-color: #f4f4f5;
-        --wrapper-background-color: #ffffff;
-        --input-box-background-color: #ededee;
-        --input-box-focus-background-color: #e2e2e4;
-        --button-background-color: #e2e2e4;
-        --button-focus-background-color: #d6d6d9;
-        --textarea-background-color: #ededee;
-        --text-color: #2b2b2f;
-    }
-}
+:root {
+  --bg: #f4f4f5;
+  --card: #fff;
+  --text: #2b2b2f;
+  --input: #ededee;
+  --input-focus: #e2e2e4;
+  --btn: #e2e2e4;
+  --btn-focus: #d6d6d9;
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --body-background-color: #121212;
-        --wrapper-background-color: #1a1a1a;
-        --input-box-background-color: #242424;
-        --input-box-focus-background-color: #2e2e2e;
-        --button-background-color: #2e2e2e;
-        --button-focus-background-color: #383838;
-        --textarea-background-color: #242424;
-        --text-color: #e6e6e6;
-    }
-}
-
-@mixin flex-center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  @media (prefers-color-scheme: dark) {
+    --bg: #121212;
+    --card: #1a1a1a;
+    --text: #e6e6e6;
+    --input: #242424;
+    --input-focus: #2e2e2e;
+    --btn: #2e2e2e;
+    --btn-focus: #383838;
+  }
 }
 
 * {
-    margin: 0px;
-    padding: 0px;
-    box-sizing: border-box;
-    border-radius: 5px;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    min-height: 100vh;
-    color: var(--text-color);
-    background-color: var(--body-background-color);
-    font-family: "QuickSand", sans-serif;
-    @include flex-center;
+  min-height: 100vh;
+  font-family: "QuickSand", sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-input,
-button {
-    font-family: "FiraCode", monospace;
+#wrapper {
+  width: clamp(360px, 90%, 650px);
+  padding: 22px;
+  background: var(--card);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
 }
 
-span.title {
-    font-weight: 600;
+.content-box {
+  width: 100%;
 }
 
-div#wrapper {
-    width: clamp(350px, 90%, 600px);
-    padding: 20px;
-    background-color: var(--wrapper-background-color);
-    @include flex-center;
-    flex-direction: column;
-    gap: 20px;
+#title {
+  display: flex;
+  justify-content: center;
+  font-weight: 600;
 
-    > * {
-        width: 100%;
-    }
-
-    > div#title-box {
-        @include flex-center;
-
-        span.title {
-            border-bottom: 5px double var(--text-color);
-            border-radius: 0px;
-        }
-    }
-
-    > div#login-box {
-        form {
-            @include flex-center;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        &.hidden {
-            display: none;
-            background: red;
-        }
-    }
-
-    > div#addon-box {
-        @include flex-center;
-        flex-direction: column;
-        gap: 10px;
-
-        textarea {
-            width: 100%;
-            height: clamp(350px, 40vh, 600px);
-            padding: 10px;
-            color: var(--text-color);
-            background-color: var(--textarea-background-color);
-            white-space: nowrap;
-        }
-
-        &.hidden {
-            display: none;
-            background: red;
-        }
-    }
+  .title {
+    border-bottom: 4px double var(--text);
+    padding-bottom: 6px;
+  }
 }
 
-div.input-box {
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.input-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: var(--input);
+  border-radius: 8px;
+  transition: background 0.4s;
+
+  .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  input {
     width: 100%;
-    @include flex-center;
-    flex-direction: row;
-    gap: 10px;
-    padding: 10px;
-    background-color: var(--input-box-background-color);
-    transition: background-color 0.5s ease-in-out;
-
-    i.fa-fw {
-        @include flex-center;
-        display: inline-flex;
-        flex-grow: 0;
-    }
-
-    input {
-        background-color: transparent;
-        border: none;
-        outline: none;
-        color: var(--text-color);
-        font-weight: 600;
-        flex-grow: 1;
-    }
-
-    &:focus-within {
-        background-color: var(--input-box-focus-background-color);
-    }
-}
-
-button {
-    width: 100%;
-    @include flex-center;
-    flex-direction: row;
     border: none;
     outline: none;
-    gap: 10px;
-    padding: 10px;
+    background: transparent;
+    font-family: "FiraCode", monospace;
     font-weight: 600;
-    letter-spacing: 0.15em;
-    color: var(--text-color);
-    background-color: var(--button-background-color);
-    transition: background-color 0.5s ease-in-out;
+    color: var(--text);
+  }
 
-    &:focus {
-        background-color: var(--button-focus-background-color);
-    }
+  &:focus-within {
+    background: var(--input-focus);
+  }
+}
+
+textarea {
+  width: 100%;
+  min-height: clamp(350px, 40vh, 600px);
+  padding: 12px;
+  background: var(--input);
+  color: var(--text);
+  font-family: "FiraCode", monospace;
+  font-weight: 600;
+  border: none;
+  outline: none;
+  resize: vertical;
+}
+
+button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  width: 100%;
+  border: none;
+  outline: none;
+  border-radius: 8px;
+  font-family: "FiraCode", monospace;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  background: var(--btn);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.4s;
+
+  &:focus {
+    background: var(--btn-focus);
+  }
+}
+
+.title-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
 }
