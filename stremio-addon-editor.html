@@ -8,27 +8,40 @@
         <link rel="stylesheet" href="/release/css/stremio-addon-editor.css" />
         <script type="module" src="/release/js/stremio-addon-editor.js" defer></script>
     </head>
+
     <body>
         <div id="wrapper">
-            <div id="title-box">
+            <div id="title" class="content-box">
                 <span class="title">Stremio Addon Editor</span>
             </div>
-            <div id="login-box" class="hidden">
+            <div id="login-load" class="content-box">
                 <form autocomplete="on">
-                    <div class="input-box">
-                        <i class="fa-fw fa-duotone fa-solid fa-envelope"></i>
-                        <input type="email" id="email" placeholder="Email Address" required />
-                    </div>
-                    <div class="input-box">
-                        <i class="fa-fw fa-duotone fa-solid fa-lock"></i>
-                        <input type="text" id="password" placeholder="Password" required />
-                    </div>
-                    <button id="login" type="submit">Login & Load Addon</button>
+                    <label class="input-box">
+                        <span class="icon"></span>
+                        <input type="email" name="email" placeholder="Email" required />
+                    </label>
+                    <label class="input-box">
+                        <span class="icon"></span>
+                        <input type="password" name="password" placeholder="Password" required />
+                    </label>
+                    <button type="submit">
+                        <span class="icon"></span>
+                        <span class="text">Login & Load</span>
+                    </button>
                 </form>
             </div>
-            <div id="addon-box" class="hidden">
-                <textarea id="addon" placeholder="[ADDON JSON DATA]"></textarea>
-                <button id="save">Save & Sync Addon</button>
+            <div id="sync-save" class="content-box">
+                <form autocomplete="off">
+                    <div class="title-box">
+                        <span class="icon"></span>
+                        <span class="title">Addon</span>
+                    </div>
+                    <textarea id="addon-json" placeholder="[ADDON JSON]" required></textarea>
+                    <button type="submit">
+                        <span class="icon"></span>
+                        <span class="text">Sync & Save</span>
+                    </button>
+                </form>
             </div>
         </div>
     </body>
