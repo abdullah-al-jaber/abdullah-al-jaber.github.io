@@ -3,142 +3,142 @@
 @import url("/release/css/font-awesome.css");
 
 :root {
-  --bg: #f4f4f5;
-  --card: #fff;
-  --text: #2b2b2f;
-  --input: #ededee;
-  --input-focus: #e2e2e4;
-  --btn: #e2e2e4;
-  --btn-focus: #d6d6d9;
+    --bg: #f4f4f5;
+    --card: #fff;
+    --text: #2b2b2f;
+    --input: #ededee;
+    --input-focus: #e2e2e4;
+    --btn: #e2e2e4;
+    --btn-focus: #d6d6d9;
 
-  @media (prefers-color-scheme: dark) {
-    --bg: #121212;
-    --card: #1a1a1a;
-    --text: #e6e6e6;
-    --input: #242424;
-    --input-focus: #2e2e2e;
-    --btn: #2e2e2e;
-    --btn-focus: #383838;
-  }
+    @media (prefers-color-scheme: dark) {
+        --bg: #121212;
+        --card: #1a1a1a;
+        --text: #e6e6e6;
+        --input: #242424;
+        --input-focus: #2e2e2e;
+        --btn: #2e2e2e;
+        --btn-focus: #383838;
+    }
 }
 
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-  min-height: 100vh;
-  font-family: "QuickSand", sans-serif;
-  color: var(--text);
-  background: var(--bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#wrapper {
-  width: clamp(360px, 90%, 650px);
-  padding: 22px;
-  background: var(--card);
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
-}
-
-.content-box {
-  width: 100%;
-}
-
-#title {
-  display: flex;
-  justify-content: center;
-  font-weight: 600;
-
-  .title {
-    border-bottom: 4px double var(--text);
-    padding-bottom: 6px;
-  }
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.input-box {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px;
-  background: var(--input);
-  border-radius: 8px;
-  transition: background 0.4s;
-
-  .icon {
+    min-height: 100vh;
+    font-family: "QuickSand", sans-serif;
+    color: var(--text);
+    background: var(--bg);
     display: flex;
     align-items: center;
     justify-content: center;
-  }
+}
 
-  input {
+#wrapper {
+    width: clamp(360px, 90%, 650px);
+    padding: 22px;
+    background: var(--card);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+.content-box {
     width: 100%;
-    border: none;
-    outline: none;
-    background: transparent;
-    font-family: "FiraCode", monospace;
-    font-weight: 600;
-    color: var(--text);
-  }
+}
 
-  &:focus-within {
-    background: var(--input-focus);
-  }
+#title {
+    display: flex;
+    justify-content: center;
+    font-weight: 600;
+
+    .title {
+        border-bottom: 4px double var(--text);
+        padding-bottom: 6px;
+    }
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.input-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: var(--input);
+    border-radius: 8px;
+    transition: background 0.4s;
+
+    .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    input {
+        width: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+        font-family: "FiraCode", monospace;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    &:focus-within {
+        background: var(--input-focus);
+    }
 }
 
 textarea {
-  width: 100%;
-  min-height: clamp(350px, 40vh, 600px);
-  padding: 12px;
-  background: var(--input);
-  color: var(--text);
-  font-family: "FiraCode", monospace;
-  font-weight: 600;
-  border: none;
-  outline: none;
-  resize: vertical;
+    width: 100%;
+    min-height: clamp(350px, 40vh, 600px);
+    padding: 12px;
+    background: var(--input);
+    color: var(--text);
+    font-family: "FiraCode", monospace;
+    font-weight: 600;
+    border: none;
+    outline: none;
+    resize: vertical;
 }
 
 button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 12px;
-  width: 100%;
-  border: none;
-  outline: none;
-  border-radius: 8px;
-  font-family: "FiraCode", monospace;
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  background: var(--btn);
-  color: var(--text);
-  cursor: pointer;
-  transition: background 0.4s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px;
+    width: 100%;
+    border: none;
+    outline: none;
+    border-radius: 8px;
+    font-family: "FiraCode", monospace;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    background: var(--btn);
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.4s;
 
-  &:focus {
-    background: var(--btn-focus);
-  }
+    &:focus {
+        background: var(--btn-focus);
+    }
 }
 
 .title-box {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
 }

@@ -1,11 +1,11 @@
 const stremio_info: {
     api_host: string;
-    auth_key ? : string;
+    auth_key?: string;
 } = {
     api_host: "api.strem.io/api",
 };
 
-const post_json = async (url: string, body: any): Promise < any > => {
+const post_json = async (url: string, body: any): Promise<any> => {
     const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -56,8 +56,8 @@ login_load_form.onsubmit = async () => {
             "stremio-login",
             JSON.stringify({
                 email: data.get("email"),
-                password: data.get("password")
-            })
+                password: data.get("password"),
+            }),
         );
     } catch (error) {
         alert("Failure in [Login & Load] !\n" + (error instanceof Error ? `${error.name}: ${error.message}` : String(error)));
