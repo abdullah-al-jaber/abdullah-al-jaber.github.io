@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>TinkerCAD Autonomy</title>
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+        <link rel="stylesheet" href="source/style.css" />
+        <script type="module" src="source/script.js" defer></script>
+    </head>
+    <body>
+        <div id="header">
+            <span id="title">TinkerCAD Autonomy</span>
+            <span class="description"># Automatic Circuit Generation for TinkerCAD #</span>
+        </div>
+        <div id="status">
+            <span id="info">Working on Circuit Generation</span>
+            <span id="success">Success on Circuit Generation</span>
+            <span id="error">Failure on Circuit Generation</span>
+        </div>
+        <div id="main">
+            <div id="input">
+                <label id="json-drop" for="json-file">Choose JSON FILE for Circuit Generation</label>
+                <input type="file" id="json-file" accept=".json,application/json" hidden />
+            </div>
+            <div id="circuit"></div>
+            <button id="submit">Confirm & Print</button>
+        </div>
+        <div id="footer">
+            <span id="warning">Please Check Your Circuit !</span>
+        </div>
+    </body>
+</html>

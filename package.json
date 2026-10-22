@@ -1,0 +1,30 @@
+{
+    "name": "abdullah-al-jaber.github.io",
+    "private": true,
+    "description": "GitHub Pages Repository",
+    "homepage": "https://github.com/abdullah-al-jaber/abdullah-al-jaber.github.io#readme",
+    "bugs": {
+        "url": "https://github.com/abdullah-al-jaber/abdullah-al-jaber.github.io/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/abdullah-al-jaber/abdullah-al-jaber.github.io.git"
+    },
+    "author": "Abdullah Al Jaber",
+    "type": "module",
+    "scripts": {
+        "build": "sass source/style:websites/style --style=compressed --no-source-map && tsc",
+        "watch": "concurrently \"sass --watch --style=compressed --no-source-map source/style:websites/style\" \"tsc --watch\"",
+        "format": "prettier --write websites/"
+    },
+    "prettier": {
+        "tabWidth": 4,
+        "printWidth": 120
+    },
+    "devDependencies": {
+        "concurrently": "^10.0.6",
+        "prettier": "^3.9.10",
+        "sass": "^1.106.1",
+        "typescript": "^7.0.2"
+    }
+}
