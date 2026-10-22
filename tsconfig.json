@@ -5,8 +5,8 @@
     "strict": true,
     "lib": ["ES2022", "DOM"],
     "skipLibCheck": true,
-    "rootDir": "source/script",
+    "rootDir": "sources/script",
     "outDir": "websites/script"
   },
-  "include": ["source/script"]
+  "include": ["sources/script"]
 }

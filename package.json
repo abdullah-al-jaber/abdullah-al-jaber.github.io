@@ -13,8 +13,8 @@
     "author": "Abdullah Al Jaber",
     "type": "module",
     "scripts": {
-        "build": "sass source/style:websites/style --style=compressed --no-source-map && tsc",
-        "watch": "concurrently \"sass --watch --style=compressed --no-source-map source/style:websites/style\" \"tsc --watch\"",
+        "build": "sass sources/style:websites/style --style=compressed --no-sources-map && tsc",
+        "watch": "concurrently \"sass --watch --style=compressed --no-sources-map sources/style:websites/style\" \"tsc --watch\"",
         "format": "prettier --write websites/"
     },
     "prettier": {
