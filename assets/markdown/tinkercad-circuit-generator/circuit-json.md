@@ -1,9 +1,14 @@
 ### Circuit JSON Guideline
 
-1. breadboards
-    - Key: "brd#<n>" (unique)
-    - stage: integer, starts at 1, no gaps
-    - Stage 1 connects to the power supply; each later stage connects to the previous stage
+`Root Of JSON` (object-type) contains :
+1. `breadboards` - (object-type)
+2. `parts` -  (object-type)
+3. `wires` -  (object-type)
+
+`breadboards` contains :
+- `breadboard_id` - (object-type)
+    - Format: "brd#<n>" (unique)
+    - stage: integer [1-n] [No Gap]
 
 2. parts
     - Key: "<type>#<n>" (e.g. "swt#1", "ic#1", "led#1")
