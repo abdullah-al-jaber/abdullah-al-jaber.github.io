@@ -7,29 +7,44 @@
         <link rel="icon" type="image/svg+xml" sizes="any" href="/assets/favicon/tinkercad-circuit-generator.svg" />
         <link rel="icon" type="image/webp" sizes="512x512" href="/assets/favicon/tinkercad-circuit-generator.webp" />
         <link rel="stylesheet" href="style/tinkercad-circuit-generator.css" />
-        <script type="module" src="script/tinkercad-circuit-generator.js" defer></script>
+        <script type="module" src="script/tinkercad-circuit-generator.js"></script>
     </head>
-
     <body>
-        <div id="header">
-            <span id="title">TinkerCAD Autonomy</span>
-            <span class="description"># Automatic Circuit Generation for TinkerCAD #</span>
-        </div>
-        <div id="status">
-            <span id="info">Working on Circuit Generation</span>
-            <span id="success">Success on Circuit Generation</span>
-            <span id="error">Failure on Circuit Generation</span>
-        </div>
-        <div id="main">
+        <header>TinkerCAD Circuit Generator</header>
+        <section id="status">
+            <div id="info">
+                <span class="icon">
+                    <i class="fa-fw fa-duotone fa-solid fa-spinner fa-spin"></i>
+                </span>
+                <span class="text">Working on Circuit Generation</span>
+            </div>
+            <div id="success">
+                <span class="icon">
+                    <i class="fa-fw fa-duotone fa-solid fa-circle-check"></i>
+                </span>
+                <span class="text">Success on Circuit Generation</span>
+            </div>
+            <div id="error">
+                <span class="icon">
+                    <i class="fa-fw fa-duotone fa-solid fa-circle-xmark"></i>
+                </span>
+                <span class="text">Error on Circuit Generation</span>
+            </div>
+        </section>
+        <main>
             <div id="input">
-                <label id="json-drop" for="json-file">Choose JSON FILE for Circuit Generation</label>
+                <label id="json-drop" for="json-file">Select or Drop Circuit JSON File</label>
                 <input type="file" id="json-file" accept=".json,application/json" hidden />
             </div>
             <div id="circuit"></div>
-            <button id="submit">Confirm & Print</button>
-        </div>
-        <div id="footer">
-            <span id="warning">Please Check Your Circuit !</span>
-        </div>
+            <button id="submit">
+                <span class="icon"><i class="fa-fw fa-duotone fa-solid fa-print"></i></span>
+                <span class="text">Confirm & Print</span>
+            </button>
+        </main>
+        <footer>
+            <span class="icon"><i class="fa-duotone fa-solid fa-triangle-exclamation"></i></span>
+            <span class="text">Please Check Out Your Circuit !</span>
+        </footer>
     </body>
 </html>
