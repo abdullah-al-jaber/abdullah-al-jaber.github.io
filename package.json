@@ -15,7 +15,7 @@
     "scripts": {
         "build": "sass sources/style:websites/style --style=compressed --no-source-map && tsc",
         "watch": "concurrently \"sass --watch --style=compressed --no-source-map sources/style:websites/style\" \"tsc --watch\"",
-        "format": "prettier --write websites/"
+        "format": "prettier --write websites/*.html sources/"
     },
     "prettier": {
         "tabWidth": 4,

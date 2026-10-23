@@ -14,6 +14,13 @@ const post_json = async (url, body) => {
 const login_load_form = document.querySelector("form#login-load");
 const sync_save_form = document.querySelector("form#sync-save");
 const addon_json_textarea = document.querySelector("textarea#addon-json");
+const password_input = login_load_form.elements.namedItem("password");
+const password_icon = password_input.closest("label")?.querySelector("i");
+password_icon.onclick = () => {
+    const show = password_input.type === "password";
+    password_input.type = show ? "text" : "password";
+    password_icon.className = `fa-fw fa-duotone fa-solid ${show ? "fa-lock-keyhole-open" : "fa-lock-keyhole"}`;
+};
 const copy_button = document.querySelector("button#copy-clipboard");
 const paste_button = document.querySelector("button#paste-clipboard");
 copy_button.onclick = async () => {

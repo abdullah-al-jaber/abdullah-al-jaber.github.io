@@ -19,6 +19,14 @@ const post_json = async (url: string, body: unknown): Promise<any> => {
 const login_load_form = document.querySelector("form#login-load") as HTMLFormElement;
 const sync_save_form = document.querySelector("form#sync-save") as HTMLFormElement;
 const addon_json_textarea = document.querySelector("textarea#addon-json") as HTMLTextAreaElement;
+const password_input = login_load_form.elements.namedItem("password") as HTMLInputElement;
+const password_icon = password_input.closest("label")?.querySelector("i") as HTMLElement;
+
+password_icon.onclick = () => {
+    const show = password_input.type === "password";
+    password_input.type = show ? "text" : "password";
+    password_icon.className = `fa-fw fa-duotone fa-solid ${show ? "fa-lock-keyhole-open" : "fa-lock-keyhole"}`;
+};
 
 const copy_button = document.querySelector("button#copy-clipboard") as HTMLButtonElement;
 const paste_button = document.querySelector("button#paste-clipboard") as HTMLButtonElement;
