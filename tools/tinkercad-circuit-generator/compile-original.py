@@ -13,11 +13,11 @@ import rich.console
 import rich.traceback
 import rich_argparse
 
-DEFAULT_INPUT = "backup"
-DEFAULT_OUTPUT = "assets"
+DEFAULT_INPUT = "original"
+DEFAULT_OUTPUT = "image"
 DEFAULT_METADATA = "metadata.json"
 
-SVGO_CONFIG = pathlib.Path(__file__).parent / "svgo.config.js"
+SVGO_CONFIG = pathlib.Path(__file__).parent / "svgo.config.cjs"
 
 SVG_NS = "http://www.w3.org/2000/svg"
 SVG_TAG = f"{{{SVG_NS}}}svg"
