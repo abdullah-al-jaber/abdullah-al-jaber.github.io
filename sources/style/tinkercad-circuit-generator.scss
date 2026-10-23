@@ -120,19 +120,29 @@ main {
             border-color 0.15s,
             color 0.15s;
 
-        &:hover {
+        &:hover,
+        &.drag-over {
             border-color: $accent;
             color: $accent;
         }
     }
 
     div#circuit {
-        min-height: 40vh;
         padding: 16px;
+        min-height: 20vh;
         background-color: $surface;
+        background-image:
+            linear-gradient(rgba($border, 0.5) 1px, transparent 1px),
+            linear-gradient(90deg, rgba($border, 0.5) 1px, transparent 1px);
+        background-size: 16px 16px;
         border: 1px solid $border;
         border-radius: 14px;
         box-shadow: 0 1px 3px rgba(33, 81, 129, 0.08);
+
+        & > svg {
+            width: 100%;
+            height: auto;
+        }
     }
 
     button#submit {
@@ -159,6 +169,54 @@ main {
 
         &:active {
             transform: scale(0.995);
+        }
+    }
+}
+
+section#instruction {
+    width: calc(100vw - 20px);
+    max-width: 720px;
+    margin: 0 auto 20px;
+    background-color: $surface;
+    border: 1px solid $border;
+    border-radius: 14px;
+    overflow: hidden;
+
+    div#top {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 48px;
+        padding: 0 16px;
+        background-color: $field;
+        border-bottom: 1px solid $border;
+        color: $accent;
+        font-weight: 600;
+    }
+
+    div#bottom {
+        padding: 16px 16px 16px 36px;
+        color: $text;
+        line-height: 1.6;
+
+        ol {
+            margin: 0;
+            padding: 0;
+        }
+
+        li + li {
+            margin-top: 6px;
+        }
+
+        a {
+            color: $accent;
+            text-decoration: none;
+            font-weight: 500;
+
+            &:hover {
+                color: $accent-hover;
+                text-decoration: underline;
+            }
         }
     }
 }

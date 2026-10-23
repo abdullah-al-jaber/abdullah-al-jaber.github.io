@@ -42,6 +42,23 @@
                 <span class="text">Confirm & Print</span>
             </button>
         </main>
+        <section id="instruction">
+            <div id="top">
+                <span class="icon"><i class="fa-fw fa-duotone fa-solid fa-circle-question"></i></span>
+                <span class="text">How to do it ?</span>
+            </div>
+            <div id="bottom">
+                <ol>
+                    <li>
+                        Create a JSON file with <code>breadboards</code>, <code>parts</code>, and <code>wires</code>.
+                    </li>
+                    <li>Assign each breadboard a <code>stage</code> starting at 1, with no gaps.</li>
+                    <li>Place each part on an existing breadboard using <code>"brd#n.column"</code>.</li>
+                    <li>Connect terminals with <code>wires</code> using <code>"part.terminal"</code> pairs.</li>
+                    <li>Select or drop the file above, then confirm and print.</li>
+                </ol>
+            </div>
+        </section>
         <footer>
             <span class="icon"><i class="fa-duotone fa-solid fa-triangle-exclamation"></i></span>
             <span class="text">Please Check Out Your Circuit !</span>
