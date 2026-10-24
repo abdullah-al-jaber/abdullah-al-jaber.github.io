@@ -1,8 +1,8 @@
 ### Circuit JSON Guideline
 
-Circuit JSON (`circuit.json`) is a structured json format used to represent the components and connections of a circuit in Tinkercad. The JSON structure consists of three main sections: `breadboards`, `parts`, and `wires`.
+Circuit JSON (`circuit.json`) represents the components and connections of a circuit. It has three main sections: `breadboards`, `parts`, and `wires`.
 
-Below is the basic structure of the `circuit.json` file:
+Basic Structure :
 
 ```json
 {
@@ -12,11 +12,15 @@ Below is the basic structure of the `circuit.json` file:
 }
 ```
 
-`breadboards` contains entries with unique keys (`breadboard_id`) representing each breadboard in the circuit. Entries store the stage numbers in array `[stage_x, stage_y]`.
+`breadboards` contains entries with unique keys (`breadboard_id`), one per breadboard. Each entry stores its stage numbers as `[stage_x, stage_y]`.
 
-**Note: Stage Numbers can't contain Any Gaps in Serial Order**
+**Notes :**
 
-Below is an example of a `breadboards` entry:
+- Stage Numbers must not have gaps in Serial Order.
+- Breadboard have 30 columns. Rows don't matter.
+- Power Connections are Auto-Generated.
+
+Example :
 
 ```json
 {
@@ -29,34 +33,37 @@ Below is an example of a `breadboards` entry:
 }
 ```
 
-`parts` contains entries with unique keys (`part_id`) representing each component in the circuit. Entries store the type of component and its placement on a breadboard.
+`parts` contains entries with unique keys (`part_id`), one per component. Each entry stores the component type and its placement on a breadboard.
 
-- `type` is one of the supported types: `switch_dip_4`, `switch_dip_6`, `led`, IC code (See List).
+- `type` is one of the supported types: `switch_dip_4`, `switch_dip_6`, `led`, or an IC code (see list below).
 - `place` is a string in the format `breadboard_id.column_number`.
 
 Available IC codes :
 
-- `ic_74hc00` - Quad 2-input NAND gate
-- `ic_74hc02` - Quad 2-input NOR gate
-- `ic_74hc04` - Hex Inverter or NOT gate
-- `ic_74hc08` - Quad 2-input AND gate
-- `ic_74hc10` - Triple 3-input NAND gate
-- `ic_74hc11` - Triple 3-input AND gate
-- `ic_74hc20` - Dual 4-input NAND gate
-- `ic_74hc21` - Dual 4-input AND gate
-- `ic_74hc27` - Triple 3-input NOR gate
-- `ic_74hc32` - Quad 2-input OR gate
-- `ic_74hc86` - Quad 2-input XOR gate
+- `ic_74hc00`: Quad 2-input NAND gate
+- `ic_74hc02`: Quad 2-input NOR gate
+- `ic_74hc04`: Hex inverter (NOT gate)
+- `ic_74hc08`: Quad 2-input AND gate
+- `ic_74hc10`: Triple 3-input NAND gate
+- `ic_74hc11`: Triple 3-input AND gate
+- `ic_74hc20`: Dual 4-input NAND gate
+- `ic_74hc21`: Dual 4-input AND gate
+- `ic_74hc27`: Triple 3-input NOR gate
+- `ic_74hc32`: Quad 2-input OR gate
+- `ic_74hc86`: Quad 2-input XOR gate
 
-**`part` always place terminals horizontally on `breadboard`.**
+**Notes :**
 
-Column Number Positioning:
+- Component always places its terminals horizontally on Breadboard.
+- Power connections are Auto-Generated.
 
-- `switch_dip_4` and `switch_dip_6` - Switch 1
-- `led` - Cathode
-- `ic_code` - Pin 1
+Component have different terminals used in `place` :
 
-Below is an example of a `parts` entry:
+- `switch_dip_4` and `switch_dip_6`: Switch 1 or 1A/1B
+- `led`: Cathode
+- IC code: GND or Pin-7
+
+Example :
 
 ```json
 {
@@ -72,13 +79,15 @@ Below is an example of a `parts` entry:
 }
 ```
 
-`wires` contains entries with unique keys (`channel_id`) representing each channel in the circuit. Entries store the color of the wire (`color`) and the array of pair (`pairs`) connection.
+`wires` contains entries with unique keys (`channel_id`), one per channel. Each entry stores the wire color (`color`) and an array of connections (`pairs`).
 
-Channel is the main route that multiple wires can share, grouping wires together. Pair is actually the wire that connect two terminals of part, which is an array of two strings, where each string represents a terminal in the format `part_id.terminal_name`.
+A channel is the main route that multiple wires can share, grouping them together. A pair is a single wire connecting two terminals, written as an array of two strings in the format `part_id.terminal_name`.
 
-**See TinkerCAD to find the terminal name of each part.**
+**Note :**
 
-Below is an example of a `wires` entry:
+- See TinkerCAD to find the terminal name of each part.
+
+Example :
 
 ```json
 {
@@ -95,4 +104,4 @@ Below is an example of a `wires` entry:
 }
 ```
 
-**Please Follow or It won't Work !**
+**Follow these rules, or it won't work!**
