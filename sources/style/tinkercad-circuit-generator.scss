@@ -71,9 +71,9 @@ section#status {
         font-weight: 500;
     }
 
-    &[data-status="info"] > div#info,
-    &[data-status="success"] > div#success,
-    &[data-status="error"] > div#error {
+    &[data-state="info"] > div#info,
+    &[data-state="success"] > div#success,
+    &[data-state="error"] > div#error {
         display: flex;
     }
 

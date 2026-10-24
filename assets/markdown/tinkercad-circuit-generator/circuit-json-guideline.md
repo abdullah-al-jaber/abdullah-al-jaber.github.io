@@ -1,44 +1,98 @@
 ### Circuit JSON Guideline
 
-`Root Of JSON` (object-type) contains :
-1. `breadboards` - (object-type)
-2. `parts` -  (object-type)
-3. `wires` -  (object-type)
+Circuit JSON (`circuit.json`) is a structured json format used to represent the components and connections of a circuit in Tinkercad. The JSON structure consists of three main sections: `breadboards`, `parts`, and `wires`.
 
-`breadboards` contains :
-- `breadboard_id` - (object-type)
-    - Format: "brd#<n>" (unique)
-    - stage: integer [1-n] [No Gap]
+Below is the basic structure of the `circuit.json` file:
 
-2. parts
-    - Key: "<type>#<n>" (e.g. "swt#1", "ic#1", "led#1")
-    - type: one of the supported types (switch_dip_4, switch_dip_6, ic_74hc00, led, resistor)
-    - place: "brd#<n>.<column>" (column is a number, e.g. "brd#1.27")
+```json
+{
+    "breadboards": {},
+    "parts": {},
+    "wires": {}
+}
+```
 
-3. wires
-    - Key: "channel#<n>" (unique)
-    - color: red, black, or green
-    - nodes: array of [from, to] pairs, each in "<part>.<terminal>" form (e.g. "swt#1.1A")
+`breadboards` contains entries with unique keys (`breadboard_id`) representing each breadboard in the circuit. Entries store the stage numbers in array `[stage_x, stage_y]`.
 
-Template:
+**Note: Stage Numbers can't contain Any Gaps in Serial Order**
+
+Below is an example of a `breadboards` entry:
 
 ```json
 {
     "breadboards": {
-        "brd#1": { "stage": 1 }
+        "brd#1": [1, 1],
+        "brd#2": [2, 1]
+    },
+    "parts": {},
+    "wires": {}
+}
+```
+
+`parts` contains entries with unique keys (`part_id`) representing each component in the circuit. Entries store the type of component and its placement on a breadboard.
+
+- `type` is one of the supported types: `switch_dip_4`, `switch_dip_6`, `led`, IC code (See List).
+- `place` is a string in the format `breadboard_id.column_number`.
+
+Available IC codes :
+
+- `ic_74hc00` - Quad 2-input NAND gate
+- `ic_74hc02` - Quad 2-input NOR gate
+- `ic_74hc04` - Hex Inverter or NOT gate
+- `ic_74hc08` - Quad 2-input AND gate
+- `ic_74hc10` - Triple 3-input NAND gate
+- `ic_74hc11` - Triple 3-input AND gate
+- `ic_74hc20` - Dual 4-input NAND gate
+- `ic_74hc21` - Dual 4-input AND gate
+- `ic_74hc27` - Triple 3-input NOR gate
+- `ic_74hc32` - Quad 2-input OR gate
+- `ic_74hc86` - Quad 2-input XOR gate
+
+**`part` always place terminals horizontally on `breadboard`.**
+
+Column Number Positioning:
+
+- `switch_dip_4` and `switch_dip_6` - Switch 1
+- `led` - Cathode
+- `ic_code` - Pin 1
+
+Below is an example of a `parts` entry:
+
+```json
+{
+    "breadboards": {
+        "brd#1": [1, 1]
     },
     "parts": {
+        "swt#1": { "type": "switch_dip_4", "place": "brd#1.5" },
+        "led#1": { "type": "led", "place": "brd#1.10" },
+        "ic#1": { "type": "ic_74hc00", "place": "brd#1.15" }
+    },
+    "wires": {}
+}
+```
+
+`wires` contains entries with unique keys (`channel_id`) representing each channel in the circuit. Entries store the color of the wire (`color`) and the array of pair (`pairs`) connection.
+
+Channel is the main route that multiple wires can share, grouping wires together. Pair is actually the wire that connect two terminals of part, which is an array of two strings, where each string represents a terminal in the format `part_id.terminal_name`.
+
+**See TinkerCAD to find the terminal name of each part.**
+
+Below is an example of a `wires` entry:
+
+```json
+{
+    "breadboards": {
+        "brd#1": [1, 1]
+    },
+    "parts": {
+        "swt#1": { "type": "switch_dip_4", "place": "brd#1.5" },
         "led#1": { "type": "led", "place": "brd#1.10" }
     },
     "wires": {
-        "channel#1": { "color": "green", "nodes": [["swt#1.1A", "led#1.1A"]] }
+        "channel#1": { "color": "green", "pairs": [["swt#1.1A", "led#1.Anode"]] }
     }
 }
 ```
 
-Checklist before generating:
-
-- Every part's place references an existing breadboard
-- Stage numbers are consecutive starting at 1
-- Every wire node references an existing part and valid terminal
-- Keys are unique within their section
+**Please Follow or It won't Work !**
