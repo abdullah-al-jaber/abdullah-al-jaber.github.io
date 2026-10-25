@@ -1,6 +1,6 @@
 ### Net-List JSON Guideline
 
-Net-List JSON (`circuit.json`) contains the blueprint of circuit. Learn Format from Example :
+Net-List JSON (`net-list.json`) contains the blueprint of circuit. Learn Format from Example :
 
 ```json
 {
