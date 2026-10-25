@@ -55,7 +55,8 @@ const footer = document.querySelector("footer") as HTMLElement;
 
 footer.addEventListener("click", (event) => {
     if (event.detail === 2) {
-        download_file("circuit.json", JSON.stringify(circuit));
+        const blob = new Blob([JSON.stringify(circuit)], { type: "application/json" });
+        download_file("circuit.json", URL.createObjectURL(blob));
     }
 });
 
@@ -90,7 +91,7 @@ drop_zone.addEventListener("dragover", (event) => {
 drop_zone.addEventListener("dragleave", () => drop_zone.classList.remove("drag-over"));
 drop_zone.addEventListener("drop", (event) => {
     event.preventDefault();
-    drop_zone.classList.remove("dragover");
+    drop_zone.classList.remove("drag-over");
     if (event.dataTransfer == null) return window.alert("No File Found");
     handle_file(event.dataTransfer.files[0]);
 });
