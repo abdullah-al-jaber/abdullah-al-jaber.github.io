@@ -1,111 +1,60 @@
-const RESOLUTION_FACTOR = 1;
-const MARGIN = 10;
+const BREADBOARD_GRID_GAP = [20, 30];
 const BACKGROUND_COLOR = "#efefef";
-const power_supply_padding = 20;
-const breadboard_horizontal_padding = 50;
-const breadboard_vertical_padding = 50;
-const svg_to_canvas = async (svg, canvas) => {
-    const xml = new XMLSerializer().serializeToString(svg);
-    const blob = new Blob([xml], { type: "image/svg+xml;charset=utf-8" });
-    const blob_url = URL.createObjectURL(blob);
-    try {
-        const img = new Image();
-        img.src = blob_url;
-        await img.decode();
-        const ctx = canvas.getContext("2d");
-        if (ctx == null)
-            throw new Error("Canvas Rendering Context is null!");
-        canvas.width = img.naturalWidth * RESOLUTION_FACTOR;
-        canvas.height = img.naturalHeight * RESOLUTION_FACTOR;
-        ctx.scale(RESOLUTION_FACTOR, RESOLUTION_FACTOR);
-        ctx.fillStyle = BACKGROUND_COLOR;
-        ctx.fillRect(0, 0, img.naturalWidth, img.naturalHeight);
-        ctx.drawImage(img, 0, 0);
-    }
-    finally {
-        URL.revokeObjectURL(blob_url);
-    }
+const NS_URL = "http://www.w3.org/2000/svg";
+const RESOLUTION_FACTOR = 4;
+const initialize_svg = () => {
+    const container = document.querySelector("div#circuit");
+    if (container == null)
+        throw new Error("SVG Container Not Found !");
+    container.childNodes.forEach((node) => node.remove());
+    const SVG = document.createElementNS(NS_URL, "svg");
+    container.append(SVG);
+    SVG.id = "SVG";
+    return SVG;
 };
-const [width, height] = [2000, 2000];
-const NS_url = "http://www.w3.org/2000/svg";
-const SVG = document.createElementNS(NS_url, "svg");
-const reset_svg = () => {
-    SVG.replaceChildren();
-    SVG.setAttribute("width", width.toString());
-    SVG.setAttribute("height", height.toString());
-    SVG.setAttribute("viewBox", `0 0 ${width} ${height}`);
-};
-SVG.id = "canvas_svg";
-reset_svg();
-const canvas = document.createElement("canvas");
-svg_to_canvas(SVG, canvas);
 const download_file = (file_name, blob_url) => {
     const link = document.createElement("a");
     link.download = file_name;
     link.href = blob_url;
     link.click();
 };
-const button = document.querySelector("button#submit");
-button.addEventListener("click", () => download_file("circuit.png", canvas.toDataURL("image/png")));
-const download_svg = (file_name, svg) => {
+const svg_to_canvas = async (svg, canvas) => {
     const xml = new XMLSerializer().serializeToString(svg);
-    const blob_url = URL.createObjectURL(new Blob([xml], {
-        type: "image/svg+xml;charset=utf-8",
-    }));
-    download_file(file_name, blob_url);
-    URL.revokeObjectURL(blob_url);
-};
-const footer = document.querySelector("footer");
-footer.click_count = 0;
-footer.addEventListener("click", () => {
-    window.clearTimeout(footer.click_timer);
-    footer.click_count += 1;
-    if (footer.click_count >= 3) {
-        footer.click_count = 0;
-        download_svg("canvas.svg", SVG);
+    const url = URL.createObjectURL(new Blob([xml], { type: "image/svg+xml;charset=utf-8" }));
+    try {
+        const img = new Image();
+        img.src = url;
+        await img.decode();
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext("2d");
+        if (ctx == null)
+            throw new Error("Canvas Context Not Found !");
+        ctx.fillStyle = BACKGROUND_COLOR;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
     }
-    else {
-        footer.click_timer = window.setTimeout(() => (footer.click_count = 0), 400);
+    finally {
+        URL.revokeObjectURL(url);
+    }
+};
+const button = document.querySelector("button#submit");
+if (button == null)
+    throw new Error("Submit Button Not Found !");
+button.addEventListener("click", () => {
+    const canvas = document.createElement("canvas");
+    const svg = document.querySelector("svg#SVG");
+    if (svg == null)
+        throw new Error("SVG Not Found !");
+    svg_to_canvas(svg, canvas);
+    download_file("circuit.png", canvas.toDataURL("image/png"));
+});
+const footer = document.querySelector("footer");
+footer.addEventListener("click", (event) => {
+    if (event.detail === 2) {
+        download_file("circuit.json", JSON.stringify({}));
     }
 });
-const fetch_json = async (json_url) => {
-    const response = await fetch(json_url);
-    if (!response.ok)
-        throw new Error(`[HTTP ${response.status}] on ${json_url}`);
-    return response.json();
-};
-const fetch_svg = async (svg_url) => {
-    const response = await fetch(svg_url);
-    if (!response.ok)
-        throw new Error(`[HTTP ${response.status}] on ${svg_url}`);
-    const doc = new DOMParser().parseFromString(await response.text(), "image/svg+xml");
-    if (doc.querySelector("parsererror"))
-        throw new Error(`Invalid SVG on ${svg_url}`);
-    return doc.documentElement;
-};
-const measurement_svg = document.createElementNS(NS_url, "svg");
-measurement_svg.setAttribute("width", width.toString());
-measurement_svg.setAttribute("height", height.toString());
-measurement_svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-measurement_svg.style.position = "absolute";
-measurement_svg.style.top = `-${height}px`;
-measurement_svg.style.left = `-${width}px`;
-measurement_svg.style.pointerEvents = "none";
-measurement_svg.id = "measurement_svg";
-document.body.appendChild(measurement_svg);
-const normalize_svg = (svg_element, padding = 5) => {
-    measurement_svg.appendChild(svg_element);
-    const bbox = svg_element.getBBox();
-    let [x, y, w, h] = [bbox.x, bbox.y, bbox.width, bbox.height];
-    [x, y] = [x, y].map((value) => value - padding);
-    [w, h] = [w, h].map((value) => value + padding * 2);
-    [x, y, w, h] = [x, y, w, h].map((value) => Math.round(value));
-    svg_element.setAttribute("width", w.toString());
-    svg_element.setAttribute("height", h.toString());
-    svg_element.setAttribute("viewBox", `${x} ${y} ${w} ${h}`);
-    measurement_svg.removeChild(svg_element);
-    return svg_element;
-};
 const status_bar = document.querySelector("section#status");
 const file_input = document.querySelector("input#json-file");
 const drop_zone = document.querySelector("label#json-drop");
@@ -115,14 +64,14 @@ const handle_file = async (file) => {
     status_bar.setAttribute("data-state", "info");
     try {
         const circuit = JSON.parse(await file.text());
-        await main(circuit);
-        status_bar.setAttribute("data-state", "success");
+        await circuit_generator(circuit);
     }
     catch (error) {
         status_bar.setAttribute("data-state", "error");
         console.error(error);
     }
     finally {
+        status_bar.setAttribute("data-state", "success");
         file_input.value = "";
     }
 };
@@ -143,10 +92,36 @@ drop_zone.addEventListener("drop", (event) => {
         return window.alert("No File Found");
     handle_file(event.dataTransfer.files[0]);
 });
-const main = async (circuit) => {
+const fetch_json = async (json_url) => {
+    const response = await fetch(json_url);
+    if (!response.ok)
+        throw new Error(`[HTTP ${response.status}] on ${json_url}`);
+    return response.json();
+};
+const metadata = await fetch_json("/assets/json/tinkercad-circuit-generator/metadata.json");
+const fetch_svg = async (svg_url) => {
+    const response = await fetch(svg_url);
+    if (!response.ok)
+        throw new Error(`[HTTP ${response.status}] on ${svg_url}`);
+    const doc = new DOMParser().parseFromString(await response.text(), "image/svg+xml");
+    if (doc.querySelector("parsererror"))
+        throw new Error(`Invalid SVG on ${svg_url}`);
+    return doc.documentElement;
+};
+const normalize_svg = (svg_element, padding = 10) => {
+    const bbox = svg_element.getBBox();
+    let [x, y, w, h] = [bbox.x, bbox.y, bbox.width, bbox.height];
+    [x, y] = [x, y].map((value) => value - padding);
+    [w, h] = [w, h].map((value) => value + padding * 2);
+    [x, y, w, h] = [x, y, w, h].map((value) => Math.round(value));
+    svg_element.setAttribute("width", w.toString());
+    svg_element.setAttribute("height", h.toString());
+    svg_element.setAttribute("viewBox", `${x} ${y} ${w} ${h}`);
+    return svg_element;
+};
+const circuit_generator = async (net_list) => {
     try {
-        const metadata = await fetch_json("/assets/json/tinkercad-circuit-generator/metadata.json");
-        reset_svg();
+        const SVG = initialize_svg();
         const find_component_by_id = (component_id) => {
             for (const component of components) {
                 if (component.id === component_id)
@@ -175,8 +150,8 @@ const main = async (circuit) => {
             id: "ps#1",
         });
         const breadboard_stages = {};
-        for (const breadboard_id in circuit.breadboards) {
-            const breadboard = circuit.breadboards[breadboard_id];
+        for (const breadboard_id in net_list.breadboards) {
+            const breadboard = net_list.breadboards[breadboard_id];
             breadboard_stages[breadboard.stage] = breadboard_stages[breadboard.stage] || {};
             breadboard_stages[breadboard.stage][breadboard_id] = breadboard;
         }
@@ -301,14 +276,14 @@ const main = async (circuit) => {
             }
             throw new Error(`Unsupported part type ${part_component.type}`);
         };
-        for (const part_id in circuit.parts) {
-            const part = circuit.parts[part_id];
+        for (const part_id in net_list.parts) {
+            const part = net_list.parts[part_id];
             if (part.type === "led") {
-                circuit.parts[`${part_id}_rst`] = { type: "resistor", place: part.place };
+                net_list.parts[`${part_id}_rst`] = { type: "resistor", place: part.place };
             }
         }
-        for (const part_id in circuit.parts) {
-            const part = circuit.parts[part_id];
+        for (const part_id in net_list.parts) {
+            const part = net_list.parts[part_id];
             const [breadboard_id, terminal_column] = part.place.split(/[:.]/);
             const breadboard_component = find_component_by_id(breadboard_id);
             const part_component = {
@@ -357,9 +332,9 @@ const main = async (circuit) => {
             segments.push(`L${last.x},${last.y}`);
             return segments.join(" ");
         };
-        const svg_connection = document.createElementNS(NS_url, "g");
+        const svg_connection = document.createElementNS(NS_URL, "g");
         for (const connection of connections) {
-            const path = document.createElementNS(NS_url, "path");
+            const path = document.createElementNS(NS_URL, "path");
             path.setAttribute("d", compute_connection(connection.points));
             path.setAttribute("fill", "none");
             path.setAttribute("stroke", connection.color);

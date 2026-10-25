@@ -1,6 +1,6 @@
-### Circuit JSON Guideline
+### Net-List JSON Guideline
 
-Circuit JSON (`circuit.json`) contains the blueprint of circuit. Learn Format from Example :
+Net-List JSON (`circuit.json`) contains the blueprint of circuit. Learn Format from Example :
 
 ```json
 {
@@ -9,7 +9,7 @@ Circuit JSON (`circuit.json`) contains the blueprint of circuit. Learn Format fr
         { "id": "BRD#2", "at": [0, 1] }
     ],
     "parts": [
-        { "id": "SWT#1", "type": "switch_dip_4", "anchor": "1@BRD#2:2" },
+        { "id": "SWT#1", "type": "switch_dip_4", "anchor": "1B@BRD#2:2" },
         { "id": "IC#1", "type": "ic_74hc86", "anchor": "1A@BRD#1:2" },
         { "id": "IC#2", "type": "ic_74hc08", "anchor": "1A@BRD#1:12" },
         { "id": "IC#3", "type": "ic_74hc32", "anchor": "1A@BRD#1:22" },
@@ -35,4 +35,4 @@ Circuit JSON (`circuit.json`) contains the blueprint of circuit. Learn Format fr
 
 **Notes :**
 
-- Format of `anchor`: `"PIN@BOARD:COLUMN"`
+- Format of `anchor`: `"PIN_NAME@BOARD_ID:COLUMN_NUMBER"`
