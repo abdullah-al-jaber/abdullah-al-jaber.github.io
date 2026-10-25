@@ -55,8 +55,9 @@ const footer = document.querySelector("footer") as HTMLElement;
 
 footer.addEventListener("click", (event) => {
     if (event.detail === 2) {
-        const blob = new Blob([JSON.stringify(circuit)], { type: "application/json" });
-        download_file("circuit.json", URL.createObjectURL(blob));
+        const url = URL.createObjectURL(new Blob([JSON.stringify(circuit)], { type: "application/json" }));
+        download_file("circuit.json", url);
+        URL.revokeObjectURL(url);
     }
 });
 
