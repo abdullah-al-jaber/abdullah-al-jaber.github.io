@@ -131,7 +131,7 @@ const circuit_generator = async (net_list) => {
         const components = [
             {
                 id: "ps#1",
-                pos: com_pos([0, 0], "power_supply"),
+                pos: [0, 0],
                 type: "power_supply",
             },
         ];
@@ -159,11 +159,68 @@ const circuit_generator = async (net_list) => {
             };
             components.push(board_component);
         }
+        const find_component_by_id = (id) => {
+            for (const component of components) {
+                if (component.id == id)
+                    return component;
+            }
+            throw new Error("Can't Find Component By ID !");
+        };
+        const terminals_position = (component, terminal) => {
+            const component_metadata = metadata[component.type];
+            const point = component_metadata.terminals[terminal];
+            if (!point)
+                throw new Error("Terminal Not Found !");
+            console.log(point, component.pos);
+            return [component.pos[0] - point[0], component.pos[1] - point[1]];
+        };
+        const determine_polarity = (terminal, component_type) => {
+            const [UP, DOWN] = ["F", "E"];
+            if (component_type == "led")
+                return UP;
+            else if (component_type.startsWith("switch"))
+                return terminal.endsWith("B") ? UP : DOWN;
+            else if (component_type.startsWith("ic")) {
+                const component_metadata = metadata[component_type];
+                return component_metadata.terminals[terminal][1] > 0 ? UP : DOWN;
+            }
+            else
+                throw new Error("Can't Determine Polarity");
+        };
+        function addDot(svg, [x, y], r = 4, fill = "red") {
+            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            circle.setAttribute("cx", x);
+            circle.setAttribute("cy", y);
+            circle.setAttribute("r", r);
+            circle.setAttribute("fill", fill);
+            svg.appendChild(circle);
+            return circle;
+        }
+        for (const part of net_list.parts) {
+            const component_metadata = metadata[part.type];
+            if (!component_metadata)
+                throw new Error("Component Not Found !");
+            const [terminal, board_id, column] = part.anchor.split(/[@:]/);
+            if (!component_metadata.terminals[terminal])
+                throw new Error("Terminal Not Found !");
+            const polarity = determine_polarity(terminal, part.type);
+            const board_point = terminals_position(find_component_by_id(board_id), `${polarity}${column}`);
+            const terminal_point = component_metadata.terminals[terminal];
+            board_point[0] -= component_metadata.body_box[2];
+            board_point[1] -= component_metadata.body_box[3];
+            const component = {
+                id: part.id,
+                type: part.type,
+                pos: com_pos([board_point[0] - terminal_point[0], board_point[1] - board_point[1]], part.type),
+            };
+            components.push(component);
+        }
         for (const component of components) {
             const svg = await fetch_svg(`/assets/image/tinkercad-circuit-generator/${component.type}.svg`);
             svg.setAttribute("x", component.pos[0].toString());
             svg.setAttribute("y", component.pos[1].toString());
             SVG.append(svg);
+            addDot(svg, component.pos);
         }
         normalize_svg(SVG);
     }

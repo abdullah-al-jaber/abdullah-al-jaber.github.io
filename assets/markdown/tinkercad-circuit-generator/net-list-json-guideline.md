@@ -35,4 +35,4 @@ Net-List JSON (`net-list.json`) contains the blueprint of circuit. Learn Format 
 
 **Notes :**
 
-- Format of `anchor`: `"PIN_NAME@BOARD_ID:COLUMN_NUMBER"`
+- Format of `anchor`: `"TERMINAL_NAME@BOARD_ID:COLUMN_NUMBER"`
