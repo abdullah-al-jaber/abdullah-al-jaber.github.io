@@ -1,4 +1,4 @@
-const BREADBOARD_GRID_GAP = [20, 30];
+const BOARD_GRID_GAP = [40, 40];
 const BACKGROUND_COLOR = "#efefef";
 
 const NS_URL = "http://www.w3.org/2000/svg";
@@ -69,11 +69,11 @@ const handle_file = async (file: File) => {
     try {
         const circuit = JSON.parse(await file.text());
         await circuit_generator(circuit);
-    } catch (error) {
-        status_bar.setAttribute("data-state", "error");
-        console.error(error);
-    } finally {
         status_bar.setAttribute("data-state", "success");
+    } catch (error) {
+        console.error(error);
+        status_bar.setAttribute("data-state", "error");
+    } finally {
         file_input.value = "";
     }
 };
@@ -101,7 +101,16 @@ const fetch_json = async (json_url: string) => {
     return response.json();
 };
 
-const metadata = await fetch_json("/assets/json/tinkercad-circuit-generator/metadata.json");
+type Point = [number, number];
+type Body_Box = [number, number, number, number];
+
+type Component_Metadata = {
+    body_box: Body_Box;
+    terminals: Record<string, Point>;
+};
+
+type Metadata = Record<string, Component_Metadata>;
+const metadata: Metadata = await fetch_json("/assets/json/tinkercad-circuit-generator/metadata.json");
 
 const fetch_svg = async (svg_url: string): Promise<SVGSVGElement> => {
     const response = await fetch(svg_url);
@@ -124,67 +133,76 @@ const normalize_svg = (svg_element: SVGSVGElement, padding = 10) => {
     return svg_element;
 };
 
-type Breadboard = {
-    stage: number;
-};
-
-type Part = {
-    type: string;
-    place: string;
-};
-
-type Wire = {
-    color: string;
-    nodes: [string, string][];
-};
-
-type Circuit = {
-    breadboards: Record<string, Breadboard>;
-    parts: Record<string, Part>;
-    wires: Record<string, Wire>;
-};
-
-type Component = {
-    type: string;
-    x: number;
-    y: number;
-    id: string;
-};
-
-type Point = { x: number; y: number };
-
-type Connection = {
-    color: string;
-    points: Point[];
-};
-
-type Rail = {
-    terminal_1: string;
-    terminal_2: string;
-    color: string;
-    shift_x: number;
-    shift_y: number;
-};
-
 const circuit = {};
 
+type Board = { id: string; at: [number, number] };
+type Part = { id: string; type: string; anchor: string };
+type Wire = [string, string, string];
+
 type Net_List = {
-    boards: { id: string; at: [number, number] }[];
-    parts: { id: string; type: string; anchor: string }[];
-    wires: [string, string, string][];
+    boards: Board[];
+    parts: Part[];
+    wires: Wire[];
 };
 
 const circuit_generator = async (net_list: Net_List) => {
     try {
         const SVG = initialize_svg();
 
+        const com_pos = (point: Point, component_type: string): Point => {
+            const component_metadata = metadata[component_type];
+            return [point[0] - component_metadata.body_box[0], point[1] - component_metadata.body_box[1]];
+        };
+
+        type Component = {
+            id: string;
+            pos: Point;
+            type: string;
+        };
+        const components: Component[] = [
+            {
+                id: "ps#1",
+                pos: com_pos([0, 0], "power_supply"),
+                type: "power_supply",
+            },
+        ];
+
+        net_list.boards = [...net_list.boards].sort((a, b) => a.at[0] - b.at[0] || a.at[1] - b.at[1]);
+        const board_map = new Map<number, Map<number, Board>>();
+        for (const board of net_list.boards) {
+            const [x, y] = board.at;
+            if (board_map.get(x)?.has(y)) throw new Error("Duplicate Board Position !");
+            if (x > 0 && !board_map.get(x - 1)?.has(0)) throw new Error("Column Gap Found !");
+            if (y > 0 && (!board_map.has(x) || !board_map.get(x)?.has(y - 1))) throw new Error("Row Gap Found !");
+            if (!board_map.has(x)) board_map.set(x, new Map());
+            board_map.get(x)!.set(y, board);
+        }
+
+        for (const [x, y, board] of [...board_map].flatMap(([x, column]) =>
+            [...column].map(([y, board]) => [x, y, board] as const),
+        )) {
+            const pos_x = x * (metadata.breadboard.body_box[2] + BOARD_GRID_GAP[0]);
+            const pos_y = y * (metadata.breadboard.body_box[3] + BOARD_GRID_GAP[1]);
+            const board_component: Component = {
+                id: board.id,
+                type: "breadboard",
+                pos: com_pos([pos_x + metadata.power_supply.body_box[2] + 40, pos_y], "breadboard"),
+            };
+            components.push(board_component);
+        }
+
+        for (const component of components) {
+            const svg = await fetch_svg(`/assets/image/tinkercad-circuit-generator/${component.type}.svg`);
+            svg.setAttribute("x", component.pos[0].toString());
+            svg.setAttribute("y", component.pos[1].toString());
+            SVG.append(svg);
+        }
         normalize_svg(SVG);
     } catch (error) {
         const error_stack = (error as Error).stack?.replace(String(error), "").trim();
         const show_alert = false,
             show_trace = false;
         if (show_alert) window.alert(`ERROR => ${(error as Error).message} ${show_trace ? `\n [${error_stack}]` : ""}`);
-        status_bar.setAttribute("data-state", "error");
         throw error;
     }
 };
