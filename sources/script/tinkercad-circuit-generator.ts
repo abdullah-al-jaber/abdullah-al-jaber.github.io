@@ -9,7 +9,7 @@ const initialize_svg = () => {
     if (container == null) throw new Error("SVG Container Not Found !");
     container.childNodes.forEach((node) => node.remove());
     const SVG = document.createElementNS(NS_URL, "svg");
-    container.append(SVG);
+    container.appendChild(SVG);
     SVG.id = "SVG";
     return SVG;
 };
@@ -43,11 +43,11 @@ const svg_to_canvas = async (svg: SVGSVGElement, canvas: HTMLCanvasElement) => {
 
 const button = document.querySelector<HTMLButtonElement>("button#submit");
 if (button == null) throw new Error("Submit Button Not Found !");
-button.addEventListener("click", () => {
+button.addEventListener("click", async () => {
     const canvas = document.createElement("canvas");
     const svg = document.querySelector<SVGSVGElement>("svg#SVG");
     if (svg == null) throw new Error("SVG Not Found !");
-    svg_to_canvas(svg, canvas);
+    await svg_to_canvas(svg, canvas);
     download_file("circuit.png", canvas.toDataURL("image/png"));
 });
 
@@ -120,16 +120,29 @@ const fetch_svg = async (svg_url: string): Promise<SVGSVGElement> => {
     return doc.documentElement as unknown as SVGSVGElement;
 };
 
-const normalize_svg = (svg_element: SVGSVGElement, padding = 10) => {
-    const bbox = svg_element.getBBox();
+const GVS = document.createElementNS(NS_URL, "svg");
+Object.assign(GVS.style, {
+    position: "fixed",
+    top: "200vh",
+    bottom: "200vh",
+    visibility: "hidden",
+} as Partial<CSSStyleDeclaration>);
+GVS.id = "GVS";
+document.body.appendChild(GVS);
+
+const normalize_svg = (svg_element: SVGSVGElement, padding = 5, scale = false) => {
+    const clone_svg_element = svg_element.cloneNode(true) as SVGSVGElement;
+    GVS.appendChild(clone_svg_element);
+    const bbox = clone_svg_element.getBBox();
     let [x, y, w, h] = [bbox.x, bbox.y, bbox.width, bbox.height];
     [x, y] = [x, y].map((value) => value - padding);
     [w, h] = [w, h].map((value) => value + padding * 2);
     [x, y, w, h] = [x, y, w, h].map((value) => Math.round(value));
     svg_element.setAttribute("viewBox", `${x} ${y} ${w} ${h}`);
-    [w, h] = [w, h].map((value) => value * RESOLUTION_FACTOR);
+    if (scale) [w, h] = [w, h].map((value) => value * RESOLUTION_FACTOR);
     svg_element.setAttribute("width", w.toString());
     svg_element.setAttribute("height", h.toString());
+    GVS.removeChild(clone_svg_element);
     return svg_element;
 };
 
@@ -148,11 +161,6 @@ type Net_List = {
 const circuit_generator = async (net_list: Net_List) => {
     try {
         const SVG = initialize_svg();
-
-        const com_pos = (point: Point, component_type: string): Point => {
-            const component_metadata = metadata[component_type];
-            return [point[0] - component_metadata.body_box[0], point[1] - component_metadata.body_box[1]];
-        };
 
         type Component = {
             id: string;
@@ -178,18 +186,20 @@ const circuit_generator = async (net_list: Net_List) => {
             board_map.get(x)!.set(y, board);
         }
 
-        for (const [x, y, board] of [...board_map].flatMap(([x, column]) =>
-            [...column].map(([y, board]) => [x, y, board] as const),
-        )) {
-            const pos_x = x * (metadata.breadboard.body_box[2] + BOARD_GRID_GAP[0]);
-            const pos_y = y * (metadata.breadboard.body_box[3] + BOARD_GRID_GAP[1]);
-            const board_component: Component = {
-                id: board.id,
-                type: "breadboard",
-                pos: com_pos([pos_x + metadata.power_supply.body_box[2] + 40, pos_y], "breadboard"),
-            };
-            components.push(board_component);
-        }
+        for (const [x, temp] of board_map)
+            for (const [y, board] of temp) {
+                const pos: Point = [
+                    x * (metadata.breadboard.body_box[2] + BOARD_GRID_GAP[0]),
+                    y * (metadata.breadboard.body_box[3] + BOARD_GRID_GAP[1]),
+                ];
+                pos[0] += metadata.power_supply.body_box[2] + 40;
+                const board_component: Component = {
+                    id: board.id,
+                    type: "breadboard",
+                    pos: pos,
+                };
+                components.push(board_component);
+            }
 
         const find_component_by_id = (id: string) => {
             for (const component of components) {
@@ -198,61 +208,65 @@ const circuit_generator = async (net_list: Net_List) => {
             throw new Error("Can't Find Component By ID !");
         };
 
-        const terminals_position = (component: Component, terminal: string): Point => {
+        const terminal_position = (component: Component, terminal: string): Point => {
             const component_metadata = metadata[component.type];
             const point = component_metadata.terminals[terminal];
             if (!point) throw new Error("Terminal Not Found !");
-            console.log(point, component.pos);
-            return [component.pos[0] - point[0], component.pos[1] - point[1]];
+            return [
+                point[0] + component.pos[0] - component_metadata.body_box[0],
+                point[1] + component.pos[1] - component_metadata.body_box[1],
+            ];
         };
 
-        const determine_polarity = (terminal: string, component_type: string) => {
+        const compute_direction = (terminal: string, component_type: string) => {
             const [UP, DOWN] = ["F", "E"];
             if (component_type == "led") return UP;
             else if (component_type.startsWith("switch")) return terminal.endsWith("B") ? UP : DOWN;
-            else if (component_type.startsWith("ic")) {
+            else if (component_type.startsWith("ic") || component_type == "resistor") {
                 const component_metadata = metadata[component_type];
-                return component_metadata.terminals[terminal][1] > 0 ? UP : DOWN;
+                return component_metadata.terminals[terminal][1] > 0 ? DOWN : UP;
             } else throw new Error("Can't Determine Polarity");
         };
 
-        function addDot(svg, [x, y], r = 4, fill = "red") {
-            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            circle.setAttribute("cx", x);
-            circle.setAttribute("cy", y);
-            circle.setAttribute("r", r);
-            circle.setAttribute("fill", fill);
-            svg.appendChild(circle);
-            return circle;
+        for (const part of net_list.parts) {
+            if (part.type == "led") {
+                const [terminal, board_id, column] = part.anchor.split(/[@:]/);
+                const resistor_part: Part = {
+                    id: `${part.id}_res`,
+                    type: "resistor",
+                    anchor: `Terminal 2@${board_id}:${Number(column) + (terminal == "Anode" ? 0 : 1)}`,
+                };
+                net_list.parts.push(resistor_part);
+            }
         }
+
         for (const part of net_list.parts) {
             const component_metadata = metadata[part.type];
             if (!component_metadata) throw new Error("Component Not Found !");
             const [terminal, board_id, column] = part.anchor.split(/[@:]/);
             if (!component_metadata.terminals[terminal]) throw new Error("Terminal Not Found !");
-            const polarity = determine_polarity(terminal, part.type);
-            const board_point = terminals_position(find_component_by_id(board_id), `${polarity}${column}`);
-            const terminal_point = component_metadata.terminals[terminal];
-
-            board_point[0] -= component_metadata.body_box[2];
-            board_point[1] -= component_metadata.body_box[3];
-
+            const polarity = compute_direction(terminal, part.type);
             const component: Component = {
                 id: part.id,
                 type: part.type,
-                pos: com_pos([board_point[0] - terminal_point[0], board_point[1] - board_point[1]], part.type),
+                pos: [0, 0],
             };
+            const board_point = terminal_position(find_component_by_id(board_id), `${polarity}${column}`);
+            const terminal_point = terminal_position(component, terminal);
+            component.pos = [board_point[0] - terminal_point[0], board_point[1] - terminal_point[1]];
             components.push(component);
         }
 
         for (const component of components) {
-            const svg = await fetch_svg(`/assets/image/tinkercad-circuit-generator/${component.type}.svg`);
+            const svg = normalize_svg(
+                await fetch_svg(`/assets/image/tinkercad-circuit-generator/${component.type}.svg`),
+            );
             svg.setAttribute("x", component.pos[0].toString());
             svg.setAttribute("y", component.pos[1].toString());
-            SVG.append(svg);
-            addDot(svg, component.pos);
+            SVG.appendChild(svg);
         }
-        normalize_svg(SVG);
+
+        normalize_svg(SVG, 10, true);
     } catch (error) {
         const error_stack = (error as Error).stack?.replace(String(error), "").trim();
         const show_alert = false,
