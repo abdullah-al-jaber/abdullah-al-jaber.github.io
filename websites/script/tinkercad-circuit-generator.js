@@ -262,8 +262,17 @@ const circuit_generator = async (net_list) => {
                 terminals: [`${board_component_1.id}.${terminal_1}`, `${board_component_2.id}.${terminal_2}`],
                 color: color,
             };
-            connections.push(bridge_connection);
+            if (color == "#F00") {
+                positive_bridge_board_connection.push(bridge_connection);
+            }
+            else if (color == "#000") {
+                negative_bridge_board_connection.push(bridge_connection);
+            }
+            else
+                throw new Error(`Unknown Power Color ! [${color}]`);
         };
+        const negative_bridge_board_connection = [];
+        const positive_bridge_board_connection = [];
         for (const [x, temp] of board_map)
             for (const [y, board] of temp) {
                 const current_board_component = find_component_by_id(board.id);
@@ -285,6 +294,8 @@ const circuit_generator = async (net_list) => {
                     bridge_board_connection(current_board_component, target_board_component, "Z30", "X30", "#000", 40);
                 }
             }
+        connections.push(...negative_bridge_board_connection);
+        connections.push(...positive_bridge_board_connection);
         const point_equal = (point_1, point_2) => point_1[0] == point_2[0] && point_1[1] == point_2[1];
         const find_board_terminal = (board_component, point) => {
             const board_terminals = metadata[board_component.type].terminals;
