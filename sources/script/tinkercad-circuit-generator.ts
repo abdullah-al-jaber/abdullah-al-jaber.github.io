@@ -366,6 +366,7 @@ const circuit_generator = async (net_list: Net_List) => {
                 board_component,
                 terminal_position(part_component, terminal_name),
             );
+            if (part_component.type == "led" && terminal_name == "Anode") return board_terminal.replace("F", "A");
             if (board_terminal.startsWith("F")) {
                 return board_terminal.replace("F", "J");
             } else if (board_terminal.startsWith("E")) {
@@ -433,11 +434,10 @@ const circuit_generator = async (net_list: Net_List) => {
             const board = find_board_by_part_id(part.id);
             const terminal_1 = farthest_terminal(board, part, terminal);
             const point_1 = terminal_position(board, terminal_1);
-            offset += 6;
             if (terminal_1.startsWith("J")) {
-                offset *= -1;
+                offset = -1 * offset - 6;
             } else if (terminal_1.startsWith("A")) {
-                offset *= 1;
+                offset = 1 * offset + 6;
             } else throw new Error(`Unknown Terminal To Handle ! [${terminal}]`);
             const point_2: Point = [point_1[0], point_1[1] + offset * 10];
             return [point_1, point_2];
@@ -446,9 +446,8 @@ const circuit_generator = async (net_list: Net_List) => {
         for (const wire of net_list.wires) {
             const [part_id_1, terminal_1] = wire[0].split(".");
             const [part_id_2, terminal_2] = wire[1].split(".");
-            const offset = Math.round(Math.random() * 8);
-            const start_points = handle_terminal_points(part_id_1, terminal_1, offset);
-            const end_points = handle_terminal_points(part_id_2, terminal_2, offset);
+            const start_points = handle_terminal_points(part_id_1, terminal_1);
+            const end_points = handle_terminal_points(part_id_2, terminal_2);
             const wire_connection: Connection = {
                 id: `wire-${wire[0]}-${wire[1]}`,
                 points: [...start_points, ...end_points.reverse()],
