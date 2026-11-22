@@ -81,7 +81,7 @@ const footer = document.querySelector("footer") as HTMLElement;
 footer.addEventListener("click", (event) => {
     if (event.detail === 2) {
         const url = URL.createObjectURL(
-            new Blob([JSON.stringify(localStorage.getItem("tinkercad-circuit"))], { type: "application/json" }),
+            new Blob([localStorage.getItem("tinkercad-circuit") ?? ""], { type: "application/json" }),
         );
         download_file("circuit.json", url);
         URL.revokeObjectURL(url);
@@ -579,7 +579,8 @@ const circuit_generator = async (net_list: Net_List) => {
         circuit_json.center.y = Math.round(circuit_svg.getBBox().y + circuit_svg.getBBox().height / 2);
 
         let _jsd_counter = 0;
-        const _compute_jsd = () => `${Date.now().toString(16)}-${(_jsd_counter++).toString(16)}-${crypto.randomUUID()}`;
+        const _compute_jsd = () =>
+            `${Date.now().toString(16)}-${(_jsd_counter++).toString(16)}-${Math.random().toString(16).slice(2)}`;
 
         for (let index = 0; index < components.length; index++) {
             const component = components[index];
