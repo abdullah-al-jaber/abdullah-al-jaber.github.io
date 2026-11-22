@@ -503,7 +503,7 @@ const circuit_generator = async (net_list: Net_List) => {
             path.setAttribute("d", path_strings.join(" "));
             path.setAttribute("stroke", connection.color);
             path.setAttribute("fill", "none");
-            path.setAttribute("stroke-width", "2");
+            path.setAttribute("stroke-width", "2.5");
             path.setAttribute("stroke-linecap", "round");
             SVG.appendChild(path);
         }
