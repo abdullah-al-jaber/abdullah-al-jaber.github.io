@@ -58,6 +58,6 @@
         }
     },
     "properties": {
-        "259": { "id": 259, "name": "resistance", "unit": "ohm", "value": 1, "show": false, "prefix": "k" }
+        "259": { "id": 259, "name": "resistance", "unit": "ohm", "value": 0.2, "show": false, "prefix": "k" }
     }
 }

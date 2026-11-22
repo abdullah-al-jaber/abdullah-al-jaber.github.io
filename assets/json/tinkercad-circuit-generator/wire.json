@@ -1,0 +1,50 @@
+{
+    "$id": "1a2030a7a85-30cb-e86e0494-7fc0-4ca0-a882-40fb6dc8ba0e",
+    "$local_id": "BendableBreadboardWire_71",
+    "$class": "BendableBreadboardWire",
+    "closed": false,
+    "fill": false,
+    "strokeWidth": 2.5,
+    "begin": { "$idref": "1a2030a4f58-2efd-c302511b-5b8e-41ab-9d43-5617f44a8dde", "$class": "Terminal" },
+    "end": { "$idref": "1a2030a4f58-2efe-e6eb167d-44c5-49d0-8d09-01cdb5b39807", "$class": "Terminal" },
+    "insert": false,
+    "color": "green",
+    "objects": [
+        {
+            "$id": "1a2030a7a86-30cc-cd59e232-3f76-4fdc-8a78-e43f1f5b238e",
+            "$local_id": "PathObject_2697",
+            "$class": "PathObject",
+            "endpoint": { "x": -1755.413469981745, "y": -776.2653508069807, "$class": "Coordinate" },
+            "tan_0": { "x": -1755.413469981745, "y": -776.2653508069807, "$class": "Coordinate" },
+            "tan_1": { "x": -1755.413469981745, "y": -776.2653508069807, "$class": "Coordinate" },
+            "type": 0
+        },
+        {
+            "$id": "1a2030a7a86-30ce-62dd4b75-27aa-44ed-ad6f-9ca9afc71cb7",
+            "$local_id": "PathObject_2699",
+            "$class": "PathObject",
+            "endpoint": { "x": -1792.6205887588362, "y": -773.3501991863806, "$class": "Coordinate" },
+            "tan_0": { "x": -1792.6205887588362, "y": -773.3501991863806, "$class": "Coordinate" },
+            "tan_1": { "x": -1792.6205887588362, "y": -773.3501991863806, "$class": "Coordinate" },
+            "type": 4
+        },
+        {
+            "$id": "1a2030a7a86-30cf-d8d8bbca-3ad6-459d-a560-4de7a510680d",
+            "$local_id": "PathObject_2700",
+            "$class": "PathObject",
+            "endpoint": { "x": -1792.6205887588362, "y": -736.8624803412063, "$class": "Coordinate" },
+            "tan_0": { "x": -1792.6205887588362, "y": -736.8624803412063, "$class": "Coordinate" },
+            "tan_1": { "x": -1792.6205887588362, "y": -736.8624803412063, "$class": "Coordinate" },
+            "type": 4
+        },
+        {
+            "$id": "1a2030a7a86-30cd-720e29d7-ea24-43c5-8412-ef97fd26cde6",
+            "$local_id": "PathObject_2698",
+            "$class": "PathObject",
+            "endpoint": { "x": -1755.413469981745, "y": -736.2653508069807, "$class": "Coordinate" },
+            "tan_0": { "x": -1755.413469981745, "y": -736.2653508069807, "$class": "Coordinate" },
+            "tan_1": { "x": -1755.413469981745, "y": -736.2653508069807, "$class": "Coordinate" },
+            "type": 4
+        }
+    ]
+}

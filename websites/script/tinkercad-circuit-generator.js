@@ -135,7 +135,11 @@ const normalize_svg = (svg_element, padding = 5, scale = false) => {
     GVS.removeChild(clone_svg_element);
     return svg_element;
 };
-const circuit = {};
+let circuit = {};
+const initialize_circuit = () => {
+    Object.keys(circuit).forEach((key) => delete circuit[key]);
+    return circuit;
+};
 const circuit_generator = async (net_list) => {
     try {
         const SVG = initialize_svg();
@@ -435,6 +439,43 @@ const circuit_generator = async (net_list) => {
             SVG.appendChild(path);
         }
         normalize_svg(SVG, 10, true);
+        initialize_circuit();
+        Object.assign(circuit, await fetch_json("/assets/json/tinkercad-circuit-generator/template.json"));
+        circuit.center.x = SVG.getBBox().x + SVG.getBBox().width / 2;
+        circuit.center.y = SVG.getBBox().y + SVG.getBBox().height / 2;
+        for (let index = 0; index < components.length; index++) {
+            const component = components[index];
+            const component_json = await fetch_json(`/assets/json/tinkercad-circuit-generator/${component.type}.json`);
+            const component_metadata = metadata[component.type];
+            component_json.breadboard.pos.x = component.pos[0] - component_metadata.body_box[0];
+            component_json.breadboard.pos.y = component.pos[1] - component_metadata.body_box[1];
+            const component_json_id = `${Date.now().toString(16)}-${index.toString(16)}-${crypto.randomUUID()}`;
+            component_json.$id = component_json_id;
+            component_json.$local_id = `Device_${index}`;
+            component_json.name = `${index}`;
+            if (component.type != "breadboard" && component.type != "power_supply") {
+            }
+            circuit.devices[component_json_id] = component_json;
+        }
+        console.log(circuit);
+        async function write() {
+            circuit = JSON.parse(await navigator.clipboard.readText());
+            console.log("Write");
+        }
+        async function read() {
+            await navigator.clipboard.writeText(JSON.stringify(circuit) || "");
+            console.log("Read");
+        }
+        document.addEventListener("keydown", (e) => {
+            if (e.ctrlKey && e.key.toLowerCase() === "e") {
+                e.preventDefault();
+                write();
+            }
+            if (e.ctrlKey && e.key.toLowerCase() === "r") {
+                e.preventDefault();
+                read();
+            }
+        });
     }
     catch (error) {
         const error_stack = error.stack?.replace(String(error), "").trim();
