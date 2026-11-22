@@ -4,22 +4,41 @@ const BACKGROUND_COLOR = "#efefef";
 const NS_URL = "http://www.w3.org/2000/svg";
 const RESOLUTION_FACTOR = 4;
 
-const initialize_svg = () => {
-    const container = document.querySelector<HTMLDivElement>("div#circuit");
-    if (container == null) throw new Error("SVG Container Not Found !");
-    container.replaceChildren();
-    const SVG = document.createElementNS(NS_URL, "svg");
-    container.appendChild(SVG);
-    SVG.id = "SVG";
-    return SVG;
+const handle_file = async (file: File) => {
+    if (!file.name.toLowerCase().endsWith(".json")) return window.alert("File isn't JSON FILE !");
+    status_bar.setAttribute("data-state", "info");
+    try {
+        const circuit = JSON.parse(await file.text());
+        await circuit_generator(circuit);
+        status_bar.setAttribute("data-state", "success");
+    } catch (error) {
+        console.error(error);
+        status_bar.setAttribute("data-state", "error");
+    } finally {
+        file_input.value = "";
+    }
 };
 
-const download_file = (file_name: string, blob_url: string) => {
-    const link = document.createElement("a");
-    link.download = file_name;
-    link.href = blob_url;
-    link.click();
-};
+const status_bar = document.querySelector("section#status") as HTMLDivElement;
+const file_input = document.querySelector("input#json-file") as HTMLInputElement;
+const drop_zone = document.querySelector("label#json-drop") as HTMLLabelElement;
+
+file_input.addEventListener("change", () => {
+    if (file_input.files == null) return window.alert("No File Found !");
+    handle_file(file_input.files[0]);
+});
+
+drop_zone.addEventListener("drop", (event) => {
+    event.preventDefault();
+    drop_zone.classList.remove("drag-over");
+    if (event.dataTransfer == null) return window.alert("No File Found");
+    handle_file(event.dataTransfer.files[0]);
+});
+drop_zone.addEventListener("dragover", (event) => {
+    event.preventDefault();
+    drop_zone.classList.add("drag-over");
+});
+drop_zone.addEventListener("dragleave", () => drop_zone.classList.remove("drag-over"));
 
 const svg_to_canvas = async (svg: SVGSVGElement, canvas: HTMLCanvasElement) => {
     const xml = new XMLSerializer().serializeToString(svg);
@@ -41,6 +60,13 @@ const svg_to_canvas = async (svg: SVGSVGElement, canvas: HTMLCanvasElement) => {
     }
 };
 
+const download_file = (file_name: string, blob_url: string) => {
+    const link = document.createElement("a");
+    link.download = file_name;
+    link.href = blob_url;
+    link.click();
+};
+
 const button = document.querySelector<HTMLButtonElement>("button#submit");
 if (button == null) throw new Error("Submit Button Not Found !");
 button.addEventListener("click", async () => {
@@ -54,64 +80,13 @@ button.addEventListener("click", async () => {
 const footer = document.querySelector("footer") as HTMLElement;
 footer.addEventListener("click", (event) => {
     if (event.detail === 2) {
-        const url = URL.createObjectURL(new Blob([JSON.stringify(circuit)], { type: "application/json" }));
+        const url = URL.createObjectURL(
+            new Blob([JSON.stringify(localStorage.getItem("tinkercad-circuit"))], { type: "application/json" }),
+        );
         download_file("circuit.json", url);
         URL.revokeObjectURL(url);
     }
 });
-
-const status_bar = document.querySelector("section#status") as HTMLDivElement;
-const file_input = document.querySelector("input#json-file") as HTMLInputElement;
-const drop_zone = document.querySelector("label#json-drop") as HTMLLabelElement;
-
-const handle_file = async (file: File) => {
-    if (!file.name.toLowerCase().endsWith(".json")) return window.alert("File isn't JSON FILE !");
-    status_bar.setAttribute("data-state", "info");
-    try {
-        const circuit = JSON.parse(await file.text());
-        await circuit_generator(circuit);
-        status_bar.setAttribute("data-state", "success");
-    } catch (error) {
-        console.error(error);
-        status_bar.setAttribute("data-state", "error");
-    } finally {
-        file_input.value = "";
-    }
-};
-
-file_input.addEventListener("change", () => {
-    if (file_input.files == null) return window.alert("No File Found !");
-    handle_file(file_input.files[0]);
-});
-
-drop_zone.addEventListener("dragover", (event) => {
-    event.preventDefault();
-    drop_zone.classList.add("drag-over");
-});
-drop_zone.addEventListener("dragleave", () => drop_zone.classList.remove("drag-over"));
-drop_zone.addEventListener("drop", (event) => {
-    event.preventDefault();
-    drop_zone.classList.remove("drag-over");
-    if (event.dataTransfer == null) return window.alert("No File Found");
-    handle_file(event.dataTransfer.files[0]);
-});
-
-const fetch_json = async (json_url: string) => {
-    const response = await fetch(json_url);
-    if (!response.ok) throw new Error(`[HTTP ${response.status}] on ${json_url}`);
-    return response.json();
-};
-
-type Point = [number, number];
-type Body_Box = [number, number, number, number];
-
-type Component_Metadata = {
-    body_box: Body_Box;
-    terminals: Record<string, Point>;
-};
-
-type Metadata = Record<string, Component_Metadata>;
-const metadata: Metadata = await fetch_json("/assets/json/tinkercad-circuit-generator/metadata.json");
 
 const fetch_svg = async (svg_url: string): Promise<SVGSVGElement> => {
     const response = await fetch(svg_url);
@@ -119,6 +94,12 @@ const fetch_svg = async (svg_url: string): Promise<SVGSVGElement> => {
     const doc = new DOMParser().parseFromString(await response.text(), "image/svg+xml");
     if (doc.querySelector("parsererror")) throw new Error(`Invalid SVG on ${svg_url}`);
     return doc.documentElement as unknown as SVGSVGElement;
+};
+
+const fetch_json = async (json_url: string) => {
+    const response = await fetch(json_url);
+    if (!response.ok) throw new Error(`[HTTP ${response.status}] on ${json_url}`);
+    return response.json();
 };
 
 const GVS = document.createElementNS(NS_URL, "svg");
@@ -147,10 +128,91 @@ const normalize_svg = (svg_element: SVGSVGElement, padding = 5, scale = false) =
     return svg_element;
 };
 
-let circuit: any = {};
-const initialize_circuit = () => {
-    Object.keys(circuit).forEach((key) => delete circuit[key]);
-    return circuit;
+type Terminal = [number, number];
+type Body_Box = [number, number, number, number];
+type Component_Metadata = {
+    body_box: Body_Box;
+    terminals: Record<string, Terminal>;
+};
+type Metadata = Record<string, Component_Metadata>;
+const metadata: Metadata = await fetch_json("/assets/json/tinkercad-circuit-generator/metadata.json");
+
+const initialize_circuit_svg = () => {
+    const container = document.querySelector<HTMLDivElement>("div#circuit");
+    if (container == null) throw new Error("SVG Container Not Found !");
+    container.querySelector(":scope > svg")?.remove();
+    const circuit_svg = document.createElementNS(NS_URL, "svg");
+    container.appendChild(circuit_svg);
+    circuit_svg.id = "SVG";
+    return circuit_svg;
+};
+
+type PosJSON = {
+    x: number;
+    y: number;
+};
+type BreadboardJSON = {
+    $id: string;
+    $local_id: string;
+    pos: PosJSON;
+};
+type WireRefJSON = {
+    $idref: string;
+    $class: string;
+};
+type TerminalJSON = {
+    $id: string;
+    bbid: number;
+    wires: Record<string, WireRefJSON>;
+};
+type DeviceJSON = {
+    $id: string;
+    $local_id: string;
+    name: string;
+    did: number;
+    breadboard: BreadboardJSON;
+    terminals: Record<string, TerminalJSON>;
+};
+type PathObjectJSON = {
+    $id: string;
+    endpoint: PosJSON;
+    tan_0: PosJSON;
+    tan_1: PosJSON;
+};
+type WireJSON = {
+    $id: string;
+    insert: boolean;
+    begin: WireRefJSON;
+    end: WireRefJSON;
+    color: string;
+    objects: PathObjectJSON[];
+};
+type CircuitJSON = {
+    devices: Record<string, DeviceJSON>;
+    wires: Record<string, WireJSON>;
+    center: PosJSON;
+};
+const initialize_circuit_json = (): CircuitJSON => {
+    const circuit = {} as CircuitJSON;
+    if (localStorage.getItem("tinkercad-circuit") !== null) localStorage.removeItem("tinkercad-circuit");
+    localStorage.setItem("tinkercad-circuit", JSON.stringify(circuit));
+    const handler: ProxyHandler<object> = {
+        get(obj, property) {
+            const value = Reflect.get(obj, property);
+            return value !== null && typeof value === "object" ? new Proxy(value, handler) : value;
+        },
+        set(obj, property, value) {
+            const success = Reflect.set(obj, property, value);
+            localStorage.setItem("tinkercad-circuit", JSON.stringify(circuit));
+            return success;
+        },
+        deleteProperty(obj, property) {
+            const success = Reflect.deleteProperty(obj, property);
+            localStorage.setItem("tinkercad-circuit", JSON.stringify(circuit));
+            return success;
+        },
+    };
+    return new Proxy(circuit, handler) as CircuitJSON;
 };
 
 type Board = { id: string; at: [number, number] };
@@ -165,12 +227,14 @@ type Net_List = {
 
 const circuit_generator = async (net_list: Net_List) => {
     try {
-        const SVG = initialize_svg();
+        const circuit_svg = initialize_circuit_svg();
+        const circuit_json = initialize_circuit_json();
 
         type Component = {
             id: string;
-            pos: Point;
+            pos: Terminal;
             type: string;
+            jsd?: string;
         };
         const components: Component[] = [
             {
@@ -179,23 +243,31 @@ const circuit_generator = async (net_list: Net_List) => {
                 type: "power_supply",
             },
         ];
+        type Connection = {
+            id: string;
+            terminals: Terminal[];
+            terminal_names: string[];
+            color: string;
+        };
+        const connections: Connection[] = [];
 
         net_list.boards = [...net_list.boards].sort((a, b) => a.at[0] - b.at[0] || a.at[1] - b.at[1]);
-        const board_map = new Map<number, Map<number, Board>>();
+
+        const board_grid = new Map<number, Map<number, Board>>();
         for (const board of net_list.boards) {
             const [x, y] = board.at;
-            if (board_map.get(x)?.has(y)) throw new Error("Duplicate Board Position !");
-            if (x > 0 && !board_map.get(x - 1)?.has(0)) throw new Error("Column Gap Found !");
-            if (y > 0 && (!board_map.has(x) || !board_map.get(x)?.has(y - 1))) throw new Error("Row Gap Found !");
-            if (!board_map.has(x)) board_map.set(x, new Map());
-            board_map.get(x)!.set(y, board);
+            if (board_grid.get(x)?.has(y)) throw new Error("Duplicate Board Position !");
+            if (x > 0 && !board_grid.get(x - 1)?.has(0)) throw new Error("Column Gap Found !");
+            if (y > 0 && (!board_grid.has(x) || !board_grid.get(x)?.has(y - 1))) throw new Error("Row Gap Found !");
+            if (!board_grid.has(x)) board_grid.set(x, new Map());
+            board_grid.get(x)!.set(y, board);
         }
 
-        for (const [x, temp] of board_map)
+        for (const [x, temp] of board_grid)
             for (const [y, board] of temp) {
-                const pos: Point = [
+                const pos: Terminal = [
                     x * (metadata.breadboard.body_box[2] + BOARD_GRID_GAP[0] * 10 + 20),
-                    y * (metadata.breadboard.body_box[3] + BOARD_GRID_GAP[1] * 10),
+                    y * (metadata.breadboard.body_box[3] + BOARD_GRID_GAP[1] * 10 + 0),
                 ];
                 pos[0] += metadata.power_supply.body_box[2] + 40;
                 const board_component: Component = {
@@ -206,59 +278,70 @@ const circuit_generator = async (net_list: Net_List) => {
                 components.push(board_component);
             }
 
-        const find_component_by_id = (id: string) => {
-            for (const component of components) {
-                if (component.id == id) return component;
-            }
+        const _terminal_equal = (terminal_1: Terminal, terminal_2: Terminal) =>
+            terminal_1[0] == terminal_2[0] && terminal_1[1] == terminal_2[1];
+
+        const _component_by_id = (id: string) => {
+            for (const component of components) if (component.id == id) return component;
             throw new Error(`Can't Find Component By ID ! [${id}]`);
         };
 
-        const terminal_position = (component: Component, terminal: string): Point => {
-            const component_metadata = metadata[component.type];
-            const point = component_metadata.terminals[terminal];
-            if (!point) throw new Error(`Terminal Not Found ! [${component.id}.${terminal}]`);
+        const _component_metadata = (component_type: string) => {
+            const component_metadata = metadata[component_type];
+            if (!component_metadata) throw new Error(`Component Type Not Found ! [${component_type}]`);
+            return component_metadata;
+        };
+
+        const _terminal = (component: Component, terminal_name: string): Terminal => {
+            const component_metadata = _component_metadata(component.type);
+            const terminal = component_metadata.terminals[terminal_name];
+            if (!terminal) throw new Error(`Terminal Not Found ! [${component.id}.${terminal_name}]`);
             return [
-                point[0] + component.pos[0] - component_metadata.body_box[0],
-                point[1] + component.pos[1] - component_metadata.body_box[1],
+                terminal[0] + component.pos[0] - component_metadata.body_box[0],
+                terminal[1] + component.pos[1] - component_metadata.body_box[1],
             ];
         };
 
-        const compute_direction = (terminal: string, component_type: string) => {
+        type Part_Anchor = [terminal_name: string, board_id: string, column_number: number];
+        const _part_anchor = (part_anchor: string): Part_Anchor => {
+            const [terminal_name, board_id, column_number] = part_anchor.split(/[@:]/);
+            if (terminal_name && board_id && column_number) return [terminal_name, board_id, Number(column_number)];
+            throw new Error(`Invalid Part Anchor [${part_anchor}]`);
+        };
+
+        const _row_string = (terminal_name: string, part_type: string) => {
             const [UP, DOWN] = ["F", "E"];
-            if (component_type == "led") return UP;
-            else if (component_type.startsWith("switch")) return terminal.endsWith("B") ? UP : DOWN;
-            else if (component_type.startsWith("ic") || component_type == "resistor") {
-                const component_metadata = metadata[component_type];
-                return component_metadata.terminals[terminal][1] > 0 ? DOWN : UP;
+            if (part_type == "led") return UP;
+            else if (part_type.startsWith("switch")) return terminal_name.endsWith("B") ? UP : DOWN;
+            else if (part_type.startsWith("ic") || part_type == "resistor") {
+                const component_metadata = metadata[part_type];
+                return component_metadata.terminals[terminal_name][1] > 0 ? DOWN : UP;
             } else throw new Error("Can't Determine Polarity");
         };
 
         for (const part of net_list.parts) {
             if (part.type == "led") {
-                const [terminal, board_id, column] = part.anchor.split(/[@:]/);
+                const [terminal_name, board_id, column_number] = _part_anchor(part.anchor);
                 const resistor_part: Part = {
                     id: `${part.id}_res`,
                     type: "resistor",
-                    anchor: `Terminal 2@${board_id}:${Number(column) + (terminal == "Anode" ? 0 : 1)}`,
+                    anchor: `Terminal 2@${board_id}:${column_number + (terminal_name == "Anode" ? 0 : 1)}`,
                 };
                 net_list.parts.push(resistor_part);
             }
         }
 
         for (const part of net_list.parts) {
-            const component_metadata = metadata[part.type];
-            if (!component_metadata) throw new Error("Component Not Found !");
-            const [terminal, board_id, column] = part.anchor.split(/[@:]/);
-            if (!component_metadata.terminals[terminal]) throw new Error("Terminal Not Found !");
-            const polarity = compute_direction(terminal, part.type);
+            const [terminal_name, board_id, column_number] = _part_anchor(part.anchor);
+            const row_string = _row_string(terminal_name, part.type);
             const component: Component = {
                 id: part.id,
                 type: part.type,
                 pos: [0, 0],
             };
-            const board_point = terminal_position(find_component_by_id(board_id), `${polarity}${column}`);
-            const terminal_point = terminal_position(component, terminal);
-            component.pos = [board_point[0] - terminal_point[0], board_point[1] - terminal_point[1]];
+            const board_terminal = _terminal(_component_by_id(board_id), `${row_string}${column_number}`);
+            const part_terminal = _terminal(component, terminal_name);
+            component.pos = [board_terminal[0] - part_terminal[0], board_terminal[1] - part_terminal[1]];
             components.push(component);
         }
 
@@ -266,125 +349,111 @@ const circuit_generator = async (net_list: Net_List) => {
             const svg = normalize_svg(
                 await fetch_svg(`/assets/image/tinkercad-circuit-generator/${component.type}.svg`),
             );
-            svg.setAttribute("x", component.pos[0].toString());
-            svg.setAttribute("y", component.pos[1].toString());
-            SVG.appendChild(svg);
+            svg.setAttribute("x", `${component.pos[0]}`);
+            svg.setAttribute("y", `${component.pos[1]}`);
+            circuit_svg.appendChild(svg);
         }
 
-        type Connection = {
-            id: string;
-            points: Point[];
-            terminals: string[];
-            color: string;
-        };
-        const connections: Connection[] = [];
-
-        const power_board_connection = (
-            power_component: Component,
-            board_component: Component,
-            terminal_1: string,
-            terminal_2: string,
+        const _board_connection = (
+            component_1: Component,
+            component_2: Component,
+            terminal_name_1: string,
+            terminal_name_2: string,
             color: string,
+            offset: number = 0,
         ) => {
-            const point_1 = terminal_position(power_component, terminal_1);
-            const point_2 = terminal_position(board_component, terminal_2);
-            const power_connection: Connection = {
-                id: `${power_component.id}.positive`,
-                points: [point_1, [point_1[0], point_2[1]], point_2],
-                terminals: [`${power_component.id}.${terminal_1}`, `${board_component.id}.${terminal_2}`],
+            const terminal_1 = _terminal(component_1, terminal_name_1);
+            const terminal_2 = _terminal(component_2, terminal_name_2);
+            const board_connection: Connection = {
+                id: `${component_1.id}.${terminal_name_1}-${component_2.id}.${terminal_name_2}`,
+                terminals: [],
+                terminal_names: [`${component_1.id}.${terminal_name_1}`, `${component_2.id}.${terminal_name_2}`],
                 color: color,
             };
-            connections.push(power_connection);
-        };
-        const bridge_board_connection = (
-            board_component_1: Component,
-            board_component_2: Component,
-            terminal_1: string,
-            terminal_2: string,
-            color: string,
-            offset: number = 20,
-        ) => {
-            const point_1 = terminal_position(board_component_1, terminal_1);
-            const point_2 = terminal_position(board_component_2, terminal_2);
-            const bridge_connection: Connection = {
-                id: `${board_component_1.id}.positive`,
-                points:
-                    offset == 0
-                        ? [point_1, point_2]
-                        : [point_1, [point_1[0] + offset, point_1[1]], [point_2[0] + offset, point_2[1]], point_2],
-                terminals: [`${board_component_1.id}.${terminal_1}`, `${board_component_2.id}.${terminal_2}`],
-                color: color,
-            };
-            if (color == "#F00") {
-                positive_bridge_board_connection.push(bridge_connection);
-            } else if (color == "#000") {
-                negative_bridge_board_connection.push(bridge_connection);
-            } else throw new Error(`Unknown Power Color ! [${color}]`);
+            if (_terminal_equal(terminal_1, terminal_2)) {
+                throw new Error(`Power Terminal Are Equal ! [${component_1.id}.${terminal_name_2}]`);
+            } else if (terminal_1[0] == terminal_2[0]) {
+                const terminals: Terminal[] = [terminal_1, terminal_2];
+                if (offset != 0) {
+                    const _terminals: Terminal[] = [
+                        [terminal_1[0] + offset, terminal_1[1]],
+                        [terminal_2[0] + offset, terminal_2[1]],
+                    ];
+                    terminals.splice(1, 0, ..._terminals);
+                }
+                board_connection.terminals = terminals;
+            } else if (terminal_1[1] == terminal_2[1]) {
+                const terminals: Terminal[] = [terminal_1, terminal_2];
+                if (offset != 0) {
+                    const _terminals: Terminal[] = [
+                        [terminal_1[0], terminal_1[1] + offset],
+                        [terminal_2[0], terminal_2[1] + offset],
+                    ];
+                    terminals.splice(1, 0, ..._terminals);
+                }
+                board_connection.terminals = terminals;
+            } else {
+                board_connection.terminals = [terminal_1, [terminal_1[0], terminal_2[1]], terminal_2];
+            }
+            connections.push(board_connection);
         };
 
-        const negative_bridge_board_connection: Connection[] = [];
-        const positive_bridge_board_connection: Connection[] = [];
-        for (const [x, temp] of board_map)
+        for (const [x, temp] of board_grid)
             for (const [y, board] of temp) {
-                const current_board_component = find_component_by_id(board.id);
-                bridge_board_connection(current_board_component, current_board_component, "W30", "Y30", "#F00", 30);
-                bridge_board_connection(current_board_component, current_board_component, "X30", "Z30", "#000", 40);
+                const current_board_component = _component_by_id(board.id);
+                _board_connection(current_board_component, current_board_component, "X30", "Z30", "#000", 40);
                 if (x == 0 && y == 0) {
                     const power_component = components[0];
-                    power_board_connection(power_component, current_board_component, "Positive", "W1", "#F00");
-                    power_board_connection(power_component, current_board_component, "Negative", "X1", "#000");
+                    _board_connection(power_component, current_board_component, "Negative", "X1", "#000");
                 } else if (x != 0 && y == 0) {
-                    const target_board_component = find_component_by_id(board_map.get(x - 1)?.get(0)?.id as string);
-                    bridge_board_connection(current_board_component, target_board_component, "Y1", "Y30", "#F00", 0);
-                    bridge_board_connection(current_board_component, target_board_component, "Z1", "Z30", "#000", 0);
+                    const target_board_component = _component_by_id(board_grid.get(x - 1)?.get(0)?.id as string);
+                    _board_connection(current_board_component, target_board_component, "Z1", "Z30", "#000", 0);
                 } else {
-                    const target_board_component = find_component_by_id(board_map.get(x)?.get(y - 1)?.id as string);
-                    bridge_board_connection(current_board_component, target_board_component, "Y30", "W30", "#F00", 30);
-                    bridge_board_connection(current_board_component, target_board_component, "Z30", "X30", "#000", 40);
+                    const target_board_component = _component_by_id(board_grid.get(x)?.get(y - 1)?.id as string);
+                    _board_connection(current_board_component, target_board_component, "Z30", "X30", "#000", 40);
                 }
             }
-        connections.push(...negative_bridge_board_connection);
-        connections.push(...positive_bridge_board_connection);
 
-        const point_equal = (point_1: Point, point_2: Point) => point_1[0] == point_2[0] && point_1[1] == point_2[1];
-        const find_board_terminal = (board_component: Component, point: Point) => {
-            const board_terminals = metadata[board_component.type].terminals;
-            for (const board_terminal in board_terminals) {
-                if (point_equal(terminal_position(board_component, board_terminal), point)) return board_terminal;
+        for (const [x, temp] of board_grid)
+            for (const [y, board] of temp) {
+                const current_board_component = _component_by_id(board.id);
+                _board_connection(current_board_component, current_board_component, "W30", "Y30", "#F00", 30);
+                if (x == 0 && y == 0) {
+                    const power_component = components[0];
+                    _board_connection(power_component, current_board_component, "Positive", "W1", "#F00");
+                } else if (x != 0 && y == 0) {
+                    const target_board_component = _component_by_id(board_grid.get(x - 1)?.get(0)?.id as string);
+                    _board_connection(current_board_component, target_board_component, "Y1", "Y30", "#F00", 0);
+                } else {
+                    const target_board_component = _component_by_id(board_grid.get(x)?.get(y - 1)?.id as string);
+                    _board_connection(current_board_component, target_board_component, "Y30", "W30", "#F00", 30);
+                }
             }
-            throw new Error(`Board Terminal Not Found ! [${board_component.id}, (${point}])`);
+
+        const _board_terminal_name = (board_component: Component, query_terminal: Terminal) => {
+            const board_terminals = _component_metadata(board_component.type).terminals;
+            for (const board_terminal_name in board_terminals) {
+                const board_terminal = _terminal(board_component, board_terminal_name);
+                if (_terminal_equal(board_terminal, query_terminal)) return board_terminal_name;
+            }
+            throw new Error(`Board Terminal Name Not Found ! [${board_component.id}, (${query_terminal}])`);
         };
 
-        const board_connection = (
+        const _edge_board_terminal_name = (
             board_component: Component,
-            connection_id: string,
-            terminal_1: string,
-            terminal_2: string,
-            color: string,
+            part_component: Component,
+            part_terminal_name: string,
         ) => {
-            connections.push({
-                id: connection_id,
-                points: [
-                    terminal_position(board_component, terminal_1),
-                    terminal_position(board_component, terminal_2),
-                ],
-                terminals: [`${board_component.id}.${terminal_1}`, `${board_component.id}.${terminal_2}`],
-                color: color,
-            });
-        };
-
-        const farthest_terminal = (board_component: Component, part_component: Component, terminal_name: string) => {
-            const board_terminal = find_board_terminal(
-                board_component,
-                terminal_position(part_component, terminal_name),
-            );
-            if (part_component.type == "led" && terminal_name == "Anode") return board_terminal.replace("F", "A");
-            if (board_terminal.startsWith("F")) {
-                return board_terminal.replace("F", "J");
-            } else if (board_terminal.startsWith("E")) {
-                return board_terminal.replace("E", "A");
+            const part_terminal = _terminal(part_component, part_terminal_name);
+            const board_terminal_name = _board_terminal_name(board_component, part_terminal);
+            if (part_component.type == "led" && part_terminal_name == "Anode")
+                return board_terminal_name.replace("F", "A");
+            if (board_terminal_name.startsWith("F")) {
+                return board_terminal_name.replace("F", "J");
+            } else if (board_terminal_name.startsWith("E")) {
+                return board_terminal_name.replace("E", "A");
             } else {
-                throw new Error(`Unknown Direction Terminal ! [${board_terminal}]`);
+                throw new Error(`Unknown Direction Terminal ! [${board_terminal_name}]`);
             }
         };
 
@@ -393,91 +462,84 @@ const circuit_generator = async (net_list: Net_List) => {
             part_component: Component,
             terminal: string,
             color: string,
-            power_terminal: string,
+            power_string: string,
         ) => {
-            const terminal_1 = farthest_terminal(board_component, part_component, terminal);
-            const terminal_2 = terminal_1.replace(terminal_1.slice(0, 1), power_terminal);
-            board_connection(board_component, `${part_component.id}.${terminal}`, terminal_1, terminal_2, color);
-            return [terminal_1, terminal_2];
+            const terminal_name_1 = _edge_board_terminal_name(board_component, part_component, terminal);
+            const terminal_name_2 = terminal_name_1.replace(terminal_name_1.slice(0, 1), power_string);
+            _board_connection(board_component, board_component, terminal_name_1, terminal_name_2, color);
+            return [terminal_name_1, terminal_name_2];
         };
 
         for (const part of net_list.parts) {
-            const board_id = part.anchor.split(/[@:]/)?.[1];
-            const board_component = find_component_by_id(board_id);
-            const part_component = find_component_by_id(part.id);
+            const board_component = _component_by_id(_part_anchor(part.anchor)[1]);
+            const part_component = _component_by_id(part.id);
             if (part.type == "led") {
                 power_part_connection(board_component, part_component, "Cathode", "#000", "Z");
             } else if (part.type.startsWith("ic")) {
-                power_part_connection(board_component, part_component, "Vcc", "#F00", "Y");
                 power_part_connection(board_component, part_component, "GND", "#000", "X");
+                power_part_connection(board_component, part_component, "Vcc", "#F00", "Y");
             } else if (part.type.startsWith("switch")) {
                 const terminal = power_part_connection(board_component, part_component, "1B", "#F00", "Y")[0];
-                let max_column: number;
-                let flag = true;
-                if (part.type.endsWith("dip_4")) {
-                    max_column = 3;
-                } else if (part.type.endsWith("dip_6")) {
-                    max_column = 5;
-                } else throw new Error(`Unknown Switch Type ! [${part.type}]`);
-                for (let column_offset = 0; column_offset < max_column; column_offset++) {
-                    const current_column = Number(terminal.slice(1)) + column_offset;
-                    const target_column = current_column + 1;
-                    const current_row = flag ? "I" : "J";
-                    board_connection(
-                        board_component,
-                        `${part.id}.${current_column}-${target_column}`,
-                        `${current_row}${current_column}`,
-                        `${current_row}${target_column}`,
-                        "#F00",
-                    );
-                    flag = !flag;
-                }
+                const switch_size = part.type.match(/dip_\d+$/)?.[0];
+                const switch_span = { dip_4: 3, dip_6: 5 }[switch_size ?? ""];
+                if (switch_span === undefined) throw new Error(`Unknown Switch Type ! [${part.type}]`);
+                const column_number = Number(terminal.slice(1));
+                Array.from({ length: switch_span }, (_, offset) => {
+                    const row_string = offset % 2 === 0 ? "I" : "J";
+                    const terminal_name_1 = `${row_string}${column_number + offset}`;
+                    const terminal_name_2 = `${row_string}${column_number + offset + 1}`;
+                    _board_connection(board_component, board_component, terminal_name_1, terminal_name_2, "#F00");
+                });
             }
         }
 
-        const find_board_by_part_id = (part_id: string) => {
-            for (const part of net_list.parts) {
-                if (part_id == part.id) return find_component_by_id(part.anchor.split(/[@:]/)?.[1]);
-            }
+        const _board_by_part_id = (part_id: string) => {
+            for (const part of net_list.parts)
+                if (part_id == part.id) return _component_by_id(_part_anchor(part.anchor)?.[1]);
             throw new Error(`Can't Find Part ! [${part_id}]`);
         };
-        const handle_terminal_points = (part_id: string, terminal: string, offset: number = 0): Point[] => {
-            const part = find_component_by_id(part_id);
-            const board = find_board_by_part_id(part.id);
-            const terminal_1 = farthest_terminal(board, part, terminal);
-            const point_1 = terminal_position(board, terminal_1);
-            if (terminal_1.startsWith("J")) {
+
+        const compute_edge_terminal_points = (
+            part_id: string,
+            part_terminal_name: string,
+            offset: number = 0,
+        ): Terminal[] => {
+            const part = _component_by_id(part_id);
+            const board = _board_by_part_id(part.id);
+            const terminal_name_1 = _edge_board_terminal_name(board, part, part_terminal_name);
+            const terminal_1 = _terminal(board, terminal_name_1);
+            if (terminal_name_1.startsWith("J")) {
                 offset = -1 * offset - 6;
-            } else if (terminal_1.startsWith("A")) {
+            } else if (terminal_name_1.startsWith("A")) {
                 offset = 1 * offset + 6;
-            } else throw new Error(`Unknown Terminal To Handle ! [${terminal}]`);
-            const point_2: Point = [point_1[0], point_1[1] + offset * 10];
-            return [point_1, point_2];
+            } else throw new Error(`Unknown Terminal To Handle ! [${part_terminal_name}]`);
+            const terminal_2: Terminal = [terminal_1[0], terminal_1[1] + offset * 10];
+            return [terminal_1, terminal_2];
         };
 
         for (const wire of net_list.wires) {
             const [part_id_1, terminal_1] = wire[0].split(".");
             const [part_id_2, terminal_2] = wire[1].split(".");
-            const start_points = handle_terminal_points(part_id_1, terminal_1);
-            const end_points = handle_terminal_points(part_id_2, terminal_2);
+            const start_points = compute_edge_terminal_points(part_id_1, terminal_1);
+            const end_points = compute_edge_terminal_points(part_id_2, terminal_2);
             const wire_connection: Connection = {
                 id: `wire-${wire[0]}-${wire[1]}`,
-                points: [...start_points, ...end_points.reverse()],
-                terminals: wire.slice(0, 2),
+                terminals: [...start_points, ...end_points.reverse()],
+                terminal_names: wire.slice(0, 2),
                 color: wire[2],
             };
             connections.push(wire_connection);
         }
 
         for (const connection of connections) {
-            if (connection.points.length < 2) throw new Error("Wrong Connection !");
-            const terminal_points = [connection.points.at(0), connection.points.at(-1)] as Point[];
+            if (connection.terminals.length < 2) throw new Error("Wrong Connection !");
+            const terminal_points = [connection.terminals.at(0), connection.terminals.at(-1)] as Terminal[];
 
             const path_strings: string[] = [];
-            for (let index = 1; index < connection.points.length - 1; index++) {
-                const current_point = connection.points[index];
-                const backward_point = connection.points[index - 1];
-                const forward_point = connection.points[index + 1];
+            for (let index = 1; index < connection.terminals.length - 1; index++) {
+                const current_point = connection.terminals[index];
+                const backward_point = connection.terminals[index - 1];
+                const forward_point = connection.terminals[index + 1];
                 const default_radius = 15;
 
                 const incoming_length = Math.hypot(
@@ -509,53 +571,107 @@ const circuit_generator = async (net_list: Net_List) => {
             path.setAttribute("fill", "none");
             path.setAttribute("stroke-width", "2.5");
             path.setAttribute("stroke-linecap", "round");
-            SVG.appendChild(path);
+            circuit_svg.appendChild(path);
         }
 
-        normalize_svg(SVG, 10, true);
+        Object.assign(circuit_json, await fetch_json("/assets/json/tinkercad-circuit-generator/template.json"));
+        circuit_json.center.x = Math.round(circuit_svg.getBBox().x + circuit_svg.getBBox().width / 2);
+        circuit_json.center.y = Math.round(circuit_svg.getBBox().y + circuit_svg.getBBox().height / 2);
 
-        initialize_circuit();
-        Object.assign(circuit, await fetch_json("/assets/json/tinkercad-circuit-generator/template.json"));
-        circuit.center.x = SVG.getBBox().x + SVG.getBBox().width / 2;
-        circuit.center.y = SVG.getBBox().y + SVG.getBBox().height / 2;
+        let _jsd_counter = 0;
+        const _compute_jsd = () => `${Date.now().toString(16)}-${(_jsd_counter++).toString(16)}-${crypto.randomUUID()}`;
 
         for (let index = 0; index < components.length; index++) {
             const component = components[index];
-            const component_json = await fetch_json(`/assets/json/tinkercad-circuit-generator/${component.type}.json`);
-            const component_metadata = metadata[component.type];
+            component.jsd = _compute_jsd();
+            const component_json: DeviceJSON = await fetch_json(
+                `/assets/json/tinkercad-circuit-generator/${component.type}.json`,
+            );
+            const component_metadata = _component_metadata(component.type);
             component_json.breadboard.pos.x = component.pos[0] - component_metadata.body_box[0];
             component_json.breadboard.pos.y = component.pos[1] - component_metadata.body_box[1];
-            const component_json_id = `${Date.now().toString(16)}-${index.toString(16)}-${crypto.randomUUID()}`;
-            component_json.$id = component_json_id;
+            component_json.$id = component.jsd;
             component_json.$local_id = `Device_${index}`;
             component_json.name = `${index}`;
-            if (component.type != "breadboard" && component.type != "power_supply") {
+            for (const terminal_json_name in component_json.terminals) {
+                const terminal_json = component_json.terminals[terminal_json_name];
+                terminal_json.$id = _compute_jsd();
             }
-            circuit.devices[component_json_id] = component_json;
+            circuit_json.devices[component.jsd] = component_json;
         }
 
-        console.log(circuit);
-        async function write() {
-            circuit = JSON.parse(await navigator.clipboard.readText());
-            console.log("Write");
+        const _part_by_part_id = (part_id: string) => {
+            for (const part of net_list.parts) if (part.id == part_id) return part;
+            throw new Error(`Unknown Part ID ! [${part_id}]`);
+        };
+
+        const terminal_json_index = (component_type: string, terminal_name: string) => {
+            const component_metadata = _component_metadata(component_type);
+            return Object.keys(component_metadata.terminals).indexOf(terminal_name);
+        };
+
+        const wire_json_template: WireJSON = await fetch_json("/assets/json/tinkercad-circuit-generator/wire.json");
+        const path_object_json_template = structuredClone(wire_json_template.objects[0]);
+        wire_json_template.objects = [];
+
+        const create_write_json = (
+            terminal_json_1: TerminalJSON,
+            terminal_json_2: TerminalJSON,
+            terminals: Terminal[] = [],
+            insert: boolean = true,
+            color: string = "green",
+        ) => {
+            const wire_json = structuredClone(wire_json_template);
+            wire_json.$id = _compute_jsd();
+            wire_json.begin.$idref = terminal_json_1.$id;
+            wire_json.end.$idref = terminal_json_2.$id;
+            wire_json.insert = insert;
+            wire_json.color = color;
+            for (const terminal of terminals) {
+                const path_object_json = structuredClone(path_object_json_template);
+                path_object_json.$id = _compute_jsd();
+                path_object_json.endpoint.x = path_object_json.tan_0.x = path_object_json.tan_1.x = terminal[0];
+                path_object_json.endpoint.y = path_object_json.tan_0.y = path_object_json.tan_1.y = terminal[1];
+                wire_json.objects.push(path_object_json);
+            }
+            circuit_json.wires[wire_json.$id] = wire_json;
+        };
+
+        for (let index = 0; index < components.length; index++) {
+            const component = components[index];
+            if (component.type == "breadboard" || component.type == "power_supply") continue;
+            const terminal_names = Object.keys(_component_metadata(component.type).terminals);
+            const part_component = components[index];
+            const board_component = _component_by_id(_part_anchor(_part_by_part_id(component.id).anchor)[1]);
+            const part_json = circuit_json.devices[part_component.jsd as string];
+            const board_json = circuit_json.devices[board_component.jsd as string];
+            for (const terminal_name of terminal_names) {
+                const part_index = terminal_json_index(part_component.type, terminal_name);
+                const board_index = terminal_json_index(
+                    board_component.type,
+                    _board_terminal_name(board_component, _terminal(part_component, terminal_name)),
+                );
+                const part_terminal_json = part_json.terminals[Object.keys(part_json.terminals)[part_index]];
+                const board_terminal_json = board_json.terminals[Object.keys(board_json.terminals)[board_index]];
+                if (part_terminal_json == undefined || board_terminal_json == undefined)
+                    throw new Error("Undefined Terminal Json !");
+                create_write_json(part_terminal_json, board_terminal_json);
+            }
         }
 
         async function read() {
-            await navigator.clipboard.writeText(JSON.stringify(circuit) || "");
+            await navigator.clipboard.writeText(JSON.stringify(circuit_json));
             console.log("Read");
         }
 
         document.addEventListener("keydown", (e) => {
-            if (e.ctrlKey && e.key.toLowerCase() === "e") {
-                e.preventDefault();
-                write();
-            }
-
             if (e.ctrlKey && e.key.toLowerCase() === "r") {
                 e.preventDefault();
                 read();
             }
         });
+        console.log(circuit_json);
+        normalize_svg(circuit_svg, 10, true);
     } catch (error) {
         const error_stack = (error as Error).stack?.replace(String(error), "").trim();
         const show_alert = false,
