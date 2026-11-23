@@ -83,7 +83,7 @@ def extract_inner_svg(input_path, output_path):
 
 
 def run_svgo(input_dir, output_dir):
-    args = ["npx", "svgo", "--config", str(SVGO_CONFIG), "-f", str(input_dir), "-o", str(output_dir)]
+    args = ["npx", "--yes", "svgo", "--config", str(SVGO_CONFIG), "-f", str(input_dir), "-o", str(output_dir)]
     subprocess.run(args, check=True, stdout=subprocess.DEVNULL)
 
 

@@ -60,7 +60,6 @@ def process(args):
 
         data["terminals"] = sort_terminals(terminals, args.field)
         (args.output / file.name).write_text(json.dumps(data, indent=4), encoding="utf-8")
-        console.print(f"[green]sorted[/green] {file.name} by {args.field}")
 
 
 def main():
