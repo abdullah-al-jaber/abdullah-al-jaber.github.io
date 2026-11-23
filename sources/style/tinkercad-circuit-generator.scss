@@ -28,6 +28,18 @@ span.icon {
     justify-content: center;
 }
 
+code {
+    padding: 0.2em 0.4em;
+    background-color: $field;
+    border: 1px solid $border;
+    border-radius: 6px;
+    color: $text;
+    font-family: "Fira Code", monospace;
+    font-size: 85%;
+    white-space: break-spaces;
+    user-select: text;
+}
+
 body {
     margin: 0;
     padding: 0;
