@@ -81,7 +81,9 @@ const footer = document.querySelector("footer") as HTMLElement;
 footer.addEventListener("click", (event) => {
     if (event.detail === 2) {
         const url = URL.createObjectURL(
-            new Blob([localStorage.getItem("tinkercad-circuit") ?? ""], { type: "application/json" }),
+            new Blob([localStorage.getItem("tinkercad-circuit") ?? "LocalStorage('tinkercad-circuit') is NULL !"], {
+                type: "application/json",
+            }),
         );
         download_file("circuit.json", url);
         URL.revokeObjectURL(url);
@@ -667,19 +669,27 @@ const circuit_generator = async (net_list: Net_List) => {
             create_write_json(terminal_json_1, terminal_json_2, connection.terminals, false, connection.color);
         }
 
-        async function read() {
-            await navigator.clipboard.writeText(JSON.stringify(circuit_json));
-            console.log("Read");
-        }
-
-        document.addEventListener("keydown", (e) => {
-            if (e.ctrlKey && e.key.toLowerCase() === "r") {
-                e.preventDefault();
-                read();
-            }
-        });
-        console.log(JSON.parse(localStorage["tinkercad-circuit"]));
         normalize_svg(circuit_svg, 10, true);
+
+        // EXTRAS
+        const shortcut_label = "CTRL+SHIFT+X";
+        async function extract_circuit_json() {
+            await navigator.clipboard.writeText(
+                localStorage.getItem("tinkercad-circuit") ?? "LocalStorage('tinkercad-circuit') is NULL !",
+            );
+            console.log("COPIED TO CLIPBOARD");
+        }
+        function handle_keydown(event: KeyboardEvent) {
+            if (event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey && event.code === "KeyX") {
+                event.preventDefault();
+                extract_circuit_json();
+            }
+        }
+        const previous_handler = (window as any).__extract_circuit_handler;
+        if (previous_handler) document.removeEventListener("keydown", previous_handler);
+        (window as any).__extract_circuit_handler = handle_keydown;
+        document.addEventListener("keydown", handle_keydown);
+        console.log(`KEY COMBINATION ADDED: ${shortcut_label}`);
     } catch (error) {
         const error_stack = (error as Error).stack?.replace(String(error), "").trim();
         const show_alert = false,
