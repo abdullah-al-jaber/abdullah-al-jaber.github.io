@@ -8,7 +8,11 @@
         "$id": "1a2027cbf4a-22-001049b0-da63-4bb1-8818-60741dd07de3",
         "$local_id": "BreadboardElement_0",
         "$class": "BreadboardElement",
-        "pos": { "x": -196.57958199356912, "y": -35.51346463022506, "$class": "Coordinate" },
+        "pos": {
+            "x": -196.57958199356912,
+            "y": -35.51346463022506,
+            "$class": "Coordinate"
+        },
         "angle": 0,
         "flip": 1
     },

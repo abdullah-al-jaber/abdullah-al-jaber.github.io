@@ -7,9 +7,9 @@ import rich.console
 import rich.traceback
 import rich_argparse
 
-DEFAULT_INPUT = "devices"
-DEFAULT_OUTPUT = "sorted"
-DEFAULT_FIELD = "pmid"
+DEFAULT_INPUT = "original_json"
+DEFAULT_OUTPUT = "compile_json"
+DEFAULT_FIELD = "bbid"
 
 console = rich.console.Console()
 rich.traceback.install(console=console)

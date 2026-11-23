@@ -8,7 +8,11 @@
         "$id": "1a20280ebb6-2d-b46e27c4-fb1a-4b1d-8674-0e766430c283",
         "$local_id": "BreadboardElement_2",
         "$class": "BreadboardElement",
-        "pos": { "x": -223.46847088245804, "y": -55.37457574133617, "$class": "Coordinate" },
+        "pos": {
+            "x": -223.46847088245804,
+            "y": -55.37457574133617,
+            "$class": "Coordinate"
+        },
         "angle": 0,
         "flip": 1
     },
@@ -16,7 +20,11 @@
         "$id": "1a20280ebb6-2e-c01fa61c-390d-4f86-adfb-46b7e2442c83",
         "$local_id": "PCBElement_1",
         "$class": "PCBElement",
-        "pos": { "x": 10000, "y": 5000, "$class": "Coordinate" },
+        "pos": {
+            "x": 10000,
+            "y": 5000,
+            "$class": "Coordinate"
+        },
         "angle": 0,
         "flip": 1
     },
@@ -57,6 +65,18 @@
             "endings": {},
             "wires": {}
         },
+        "457437_39649_108219_132576_null_203045": {
+            "$id": "1a20280ebb6-38-fb0b250a-e579-4af5-b5c3-705fe2f51aef",
+            "$local_id": "Terminal_443",
+            "$class": "Terminal",
+            "pmid": 457437,
+            "sdid": 39649,
+            "spid": 108219,
+            "ppid": 132576,
+            "bbid": 203045,
+            "endings": {},
+            "wires": {}
+        },
         "457431_39649_108220_132577_null_203046": {
             "$id": "1a20280ebb6-32-345320ed-cb6c-478f-ba99-ce06bb588474",
             "$local_id": "Terminal_437",
@@ -66,6 +86,42 @@
             "spid": 108220,
             "ppid": 132577,
             "bbid": 203046,
+            "endings": {},
+            "wires": {}
+        },
+        "457440_39649_108221_132578_null_203047": {
+            "$id": "1a20280ebb6-3b-07737713-ba8d-496f-a8ff-3c5967ee732e",
+            "$local_id": "Terminal_446",
+            "$class": "Terminal",
+            "pmid": 457440,
+            "sdid": 39649,
+            "spid": 108221,
+            "ppid": 132578,
+            "bbid": 203047,
+            "endings": {},
+            "wires": {}
+        },
+        "457434_39649_108222_132579_null_203048": {
+            "$id": "1a20280ebb6-35-4329b728-8db3-44da-be2a-25ac824bc1f4",
+            "$local_id": "Terminal_440",
+            "$class": "Terminal",
+            "pmid": 457434,
+            "sdid": 39649,
+            "spid": 108222,
+            "ppid": 132579,
+            "bbid": 203048,
+            "endings": {},
+            "wires": {}
+        },
+        "457438_39649_108223_132586_null_203049": {
+            "$id": "1a20280ebb6-39-c1ac685b-1d15-45ba-9373-27801bd389de",
+            "$local_id": "Terminal_444",
+            "$class": "Terminal",
+            "pmid": 457438,
+            "sdid": 39649,
+            "spid": 108223,
+            "ppid": 132586,
+            "bbid": 203049,
             "endings": {},
             "wires": {}
         },
@@ -81,27 +137,27 @@
             "endings": {},
             "wires": {}
         },
-        "457433_39649_108229_132580_null_203055": {
-            "$id": "1a20280ebb6-34-db7ccd7b-44e3-43f9-a780-c8a7addeab05",
-            "$local_id": "Terminal_439",
+        "457441_39649_108225_132584_null_203051": {
+            "$id": "1a20280ebb6-3c-7cf87df6-dd30-4dbe-8936-9071af534dfb",
+            "$local_id": "Terminal_447",
             "$class": "Terminal",
-            "pmid": 457433,
+            "pmid": 457441,
             "sdid": 39649,
-            "spid": 108229,
-            "ppid": 132580,
-            "bbid": 203055,
+            "spid": 108225,
+            "ppid": 132584,
+            "bbid": 203051,
             "endings": {},
             "wires": {}
         },
-        "457434_39649_108222_132579_null_203048": {
-            "$id": "1a20280ebb6-35-4329b728-8db3-44da-be2a-25ac824bc1f4",
-            "$local_id": "Terminal_440",
+        "457439_39649_108226_132583_null_203052": {
+            "$id": "1a20280ebb6-3a-d9348634-3e4f-44f4-a654-267cd4f8bb8b",
+            "$local_id": "Terminal_445",
             "$class": "Terminal",
-            "pmid": 457434,
+            "pmid": 457439,
             "sdid": 39649,
-            "spid": 108222,
-            "ppid": 132579,
-            "bbid": 203048,
+            "spid": 108226,
+            "ppid": 132583,
+            "bbid": 203052,
             "endings": {},
             "wires": {}
         },
@@ -129,63 +185,15 @@
             "endings": {},
             "wires": {}
         },
-        "457437_39649_108219_132576_null_203045": {
-            "$id": "1a20280ebb6-38-fb0b250a-e579-4af5-b5c3-705fe2f51aef",
-            "$local_id": "Terminal_443",
+        "457433_39649_108229_132580_null_203055": {
+            "$id": "1a20280ebb6-34-db7ccd7b-44e3-43f9-a780-c8a7addeab05",
+            "$local_id": "Terminal_439",
             "$class": "Terminal",
-            "pmid": 457437,
+            "pmid": 457433,
             "sdid": 39649,
-            "spid": 108219,
-            "ppid": 132576,
-            "bbid": 203045,
-            "endings": {},
-            "wires": {}
-        },
-        "457438_39649_108223_132586_null_203049": {
-            "$id": "1a20280ebb6-39-c1ac685b-1d15-45ba-9373-27801bd389de",
-            "$local_id": "Terminal_444",
-            "$class": "Terminal",
-            "pmid": 457438,
-            "sdid": 39649,
-            "spid": 108223,
-            "ppid": 132586,
-            "bbid": 203049,
-            "endings": {},
-            "wires": {}
-        },
-        "457439_39649_108226_132583_null_203052": {
-            "$id": "1a20280ebb6-3a-d9348634-3e4f-44f4-a654-267cd4f8bb8b",
-            "$local_id": "Terminal_445",
-            "$class": "Terminal",
-            "pmid": 457439,
-            "sdid": 39649,
-            "spid": 108226,
-            "ppid": 132583,
-            "bbid": 203052,
-            "endings": {},
-            "wires": {}
-        },
-        "457440_39649_108221_132578_null_203047": {
-            "$id": "1a20280ebb6-3b-07737713-ba8d-496f-a8ff-3c5967ee732e",
-            "$local_id": "Terminal_446",
-            "$class": "Terminal",
-            "pmid": 457440,
-            "sdid": 39649,
-            "spid": 108221,
-            "ppid": 132578,
-            "bbid": 203047,
-            "endings": {},
-            "wires": {}
-        },
-        "457441_39649_108225_132584_null_203051": {
-            "$id": "1a20280ebb6-3c-7cf87df6-dd30-4dbe-8936-9071af534dfb",
-            "$local_id": "Terminal_447",
-            "$class": "Terminal",
-            "pmid": 457441,
-            "sdid": 39649,
-            "spid": 108225,
-            "ppid": 132584,
-            "bbid": 203051,
+            "spid": 108229,
+            "ppid": 132580,
+            "bbid": 203055,
             "endings": {},
             "wires": {}
         }
@@ -195,7 +203,11 @@
             "$id": "1a20280ebb6-2c-48e6de7f-8a3d-45f6-aa54-529a6a912c5b",
             "$local_id": "SchematicElement_1",
             "$class": "SchematicElement",
-            "pos": { "x": 50, "y": 0, "$class": "Coordinate" },
+            "pos": {
+                "x": 50,
+                "y": 0,
+                "$class": "Coordinate"
+            },
             "angle": 0,
             "flip": 1,
             "sdid": 39649

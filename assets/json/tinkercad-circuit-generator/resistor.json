@@ -8,7 +8,11 @@
         "$id": "1a202879d57-178-38b4642f-3b98-43e5-9cf4-679bfa8bf9aa",
         "$local_id": "BreadboardElement_15",
         "$class": "BreadboardElement",
-        "pos": { "x": -161.74624866023584, "y": -79.20790907466952, "$class": "Coordinate" },
+        "pos": {
+            "x": -161.74624866023584,
+            "y": -79.20790907466952,
+            "$class": "Coordinate"
+        },
         "angle": 0,
         "flip": 1
     },
@@ -16,23 +20,15 @@
         "$id": "1a202879d57-179-ccb6b10e-3148-4bc3-a0c9-10596251aa54",
         "$local_id": "PCBElement_14",
         "$class": "PCBElement",
-        "pos": { "x": 25000, "y": 10000, "$class": "Coordinate" },
+        "pos": {
+            "x": 25000,
+            "y": 10000,
+            "$class": "Coordinate"
+        },
         "angle": 0,
         "flip": 1
     },
     "terminals": {
-        "226681_21154_7_8014_null_204372": {
-            "$id": "1a202879d57-17a-94f81b33-6174-4878-a38a-84e7f52d7a54",
-            "$local_id": "Terminal_580",
-            "$class": "Terminal",
-            "pmid": 226681,
-            "sdid": 21154,
-            "spid": 7,
-            "ppid": 8014,
-            "bbid": 204372,
-            "endings": {},
-            "wires": {}
-        },
         "226682_21154_6_8013_null_204371": {
             "$id": "1a202879d57-17b-700b4049-e93b-4668-af2c-233f697bf9e4",
             "$local_id": "Terminal_581",
@@ -44,6 +40,18 @@
             "bbid": 204371,
             "endings": {},
             "wires": {}
+        },
+        "226681_21154_7_8014_null_204372": {
+            "$id": "1a202879d57-17a-94f81b33-6174-4878-a38a-84e7f52d7a54",
+            "$local_id": "Terminal_580",
+            "$class": "Terminal",
+            "pmid": 226681,
+            "sdid": 21154,
+            "spid": 7,
+            "ppid": 8014,
+            "bbid": 204372,
+            "endings": {},
+            "wires": {}
         }
     },
     "subdevice": {
@@ -51,13 +59,24 @@
             "$id": "1a202879d57-177-4a921c7b-0324-436b-8b55-084dc324e856",
             "$local_id": "SchematicElement_14",
             "$class": "SchematicElement",
-            "pos": { "x": 700, "y": 0, "$class": "Coordinate" },
+            "pos": {
+                "x": 700,
+                "y": 0,
+                "$class": "Coordinate"
+            },
             "angle": 0,
             "flip": 1,
             "sdid": 21154
         }
     },
     "properties": {
-        "259": { "id": 259, "name": "resistance", "unit": "ohm", "value": 0.2, "show": false, "prefix": "k" }
+        "259": {
+            "id": 259,
+            "name": "resistance",
+            "unit": "ohm",
+            "value": 0.2,
+            "show": false,
+            "prefix": "k"
+        }
     }
 }

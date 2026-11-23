@@ -8,7 +8,11 @@
         "$id": "1a202874029-16a-da2e1a3c-e98c-4d15-ab58-fe7f4598edb6",
         "$local_id": "BreadboardElement_13",
         "$class": "BreadboardElement",
-        "pos": { "x": -227.13513754912472, "y": -45.5967979635584, "$class": "Coordinate" },
+        "pos": {
+            "x": -227.13513754912472,
+            "y": -45.5967979635584,
+            "$class": "Coordinate"
+        },
         "angle": 0,
         "flip": 1
     },
@@ -16,23 +20,15 @@
         "$id": "1a202874029-16b-c73dc72e-ca14-4599-9afb-c4480a97f790",
         "$local_id": "PCBElement_12",
         "$class": "PCBElement",
-        "pos": { "x": 15000, "y": 10000, "$class": "Coordinate" },
+        "pos": {
+            "x": 15000,
+            "y": 10000,
+            "$class": "Coordinate"
+        },
         "angle": 0,
         "flip": 1
     },
     "terminals": {
-        "435573_37914_195873_246065_null_198625": {
-            "$id": "1a202874029-16c-2076cb3d-238b-4713-bb72-92db2d1afa11",
-            "$local_id": "Terminal_576",
-            "$class": "Terminal",
-            "pmid": 435573,
-            "sdid": 37914,
-            "spid": 195873,
-            "ppid": 246065,
-            "bbid": 198625,
-            "endings": {},
-            "wires": {}
-        },
         "435574_37914_195874_246064_null_198624": {
             "$id": "1a202874029-16d-f0ae6e5f-1c6b-4ade-9a66-140910e184a1",
             "$local_id": "Terminal_577",
@@ -44,6 +40,18 @@
             "bbid": 198624,
             "endings": {},
             "wires": {}
+        },
+        "435573_37914_195873_246065_null_198625": {
+            "$id": "1a202874029-16c-2076cb3d-238b-4713-bb72-92db2d1afa11",
+            "$local_id": "Terminal_576",
+            "$class": "Terminal",
+            "pmid": 435573,
+            "sdid": 37914,
+            "spid": 195873,
+            "ppid": 246065,
+            "bbid": 198625,
+            "endings": {},
+            "wires": {}
         }
     },
     "subdevice": {
@@ -51,14 +59,32 @@
             "$id": "1a202874029-169-a698a57f-ad13-414c-9fd8-6d2f6e9802a0",
             "$local_id": "SchematicElement_12",
             "$class": "SchematicElement",
-            "pos": { "x": 600, "y": 0, "$class": "Coordinate" },
+            "pos": {
+                "x": 600,
+                "y": 0,
+                "$class": "Coordinate"
+            },
             "angle": 0,
             "flip": 1,
             "sdid": 37914
         }
     },
     "properties": {
-        "1798": { "id": 1798, "name": "Voltage", "unit": "", "value": 5, "show": false, "prefix": "" },
-        "1799": { "id": 1799, "name": "Current", "unit": "", "value": 5, "show": false, "prefix": "" }
+        "1798": {
+            "id": 1798,
+            "name": "Voltage",
+            "unit": "",
+            "value": 5,
+            "show": false,
+            "prefix": ""
+        },
+        "1799": {
+            "id": 1799,
+            "name": "Current",
+            "unit": "",
+            "value": 5,
+            "show": false,
+            "prefix": ""
+        }
     }
 }

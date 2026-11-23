@@ -8,7 +8,11 @@
         "$id": "1a20286c692-163-3409cad5-a1e5-4d1f-8825-572187050ab5",
         "$local_id": "BreadboardElement_12",
         "$class": "BreadboardElement",
-        "pos": { "x": -263.8018042157914, "y": -83.48568685244729, "$class": "Coordinate" },
+        "pos": {
+            "x": -263.8018042157914,
+            "y": -83.48568685244729,
+            "$class": "Coordinate"
+        },
         "angle": 0,
         "flip": 1
     },
@@ -16,7 +20,11 @@
         "$id": "1a20286c693-164-9e2a1542-aa46-4f6a-8b73-154fe4c28038",
         "$local_id": "PCBElement_11",
         "$class": "PCBElement",
-        "pos": { "x": 10000, "y": 10000, "$class": "Coordinate" },
+        "pos": {
+            "x": 10000,
+            "y": 10000,
+            "$class": "Coordinate"
+        },
         "angle": 0,
         "flip": 1
     },
@@ -51,7 +59,11 @@
             "$id": "1a20286c692-162-94ca628f-51bb-4747-943d-03ddf59274d1",
             "$local_id": "SchematicElement_11",
             "$class": "SchematicElement",
-            "pos": { "x": 550, "y": 0, "$class": "Coordinate" },
+            "pos": {
+                "x": 550,
+                "y": 0,
+                "$class": "Coordinate"
+            },
             "angle": 0,
             "flip": 1,
             "sdid": 22944
