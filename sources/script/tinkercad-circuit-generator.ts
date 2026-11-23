@@ -499,33 +499,33 @@ const circuit_generator = async (net_list: Net_List) => {
             throw new Error(`Can't Find Part ! [${part_id}]`);
         };
 
-        const compute_edge_terminal_points = (
+        const compute_edge_terminals = (
             part_id: string,
             part_terminal_name: string,
             offset: number = 0,
-        ): Terminal[] => {
-            const part = _component_by_id(part_id);
-            const board = _board_by_part_id(part.id);
-            const terminal_name_1 = _edge_board_terminal_name(board, part, part_terminal_name);
-            const terminal_1 = _terminal(board, terminal_name_1);
-            if (terminal_name_1.startsWith("J")) {
+        ): [Terminal[], string] => {
+            const part_component = _component_by_id(part_id);
+            const board_component = _board_by_part_id(part_component.id);
+            const board_terminal_name = _edge_board_terminal_name(board_component, part_component, part_terminal_name);
+            const terminal_1 = _terminal(board_component, board_terminal_name);
+            if (board_terminal_name.startsWith("J")) {
                 offset = -1 * offset - 6;
-            } else if (terminal_name_1.startsWith("A")) {
+            } else if (board_terminal_name.startsWith("A")) {
                 offset = 1 * offset + 6;
             } else throw new Error(`Unknown Terminal To Handle ! [${part_terminal_name}]`);
             const terminal_2: Terminal = [terminal_1[0], terminal_1[1] + offset * 10];
-            return [terminal_1, terminal_2];
+            return [[terminal_1, terminal_2], `${board_component.id}.${board_terminal_name}`];
         };
 
         for (const wire of net_list.wires) {
-            const [part_id_1, terminal_1] = wire[0].split(".");
-            const [part_id_2, terminal_2] = wire[1].split(".");
-            const start_points = compute_edge_terminal_points(part_id_1, terminal_1);
-            const end_points = compute_edge_terminal_points(part_id_2, terminal_2);
+            const [part_id_1, part_terminal_name_1] = wire[0].split(".");
+            const [part_id_2, part_terminal_name_2] = wire[1].split(".");
+            const [start_terminals, board_terminal_name_1] = compute_edge_terminals(part_id_1, part_terminal_name_1);
+            const [end_terminals, board_terminal_name_2] = compute_edge_terminals(part_id_2, part_terminal_name_2);
             const wire_connection: Connection = {
                 id: `wire-${wire[0]}-${wire[1]}`,
-                terminals: [...start_points, ...end_points.reverse()],
-                terminal_names: wire.slice(0, 2),
+                terminals: [...start_terminals, ...end_terminals.reverse()],
+                terminal_names: [board_terminal_name_1, board_terminal_name_2],
                 color: wire[2],
             };
             connections.push(wire_connection);
@@ -541,7 +541,6 @@ const circuit_generator = async (net_list: Net_List) => {
                 const backward_point = connection.terminals[index - 1];
                 const forward_point = connection.terminals[index + 1];
                 const default_radius = 15;
-
                 const incoming_length = Math.hypot(
                     current_point[0] - backward_point[0],
                     current_point[1] - backward_point[1],
@@ -550,15 +549,11 @@ const circuit_generator = async (net_list: Net_List) => {
                     forward_point[0] - current_point[0],
                     forward_point[1] - current_point[1],
                 );
-
                 const radius = Math.min(default_radius, incoming_length / 2, outgoing_length / 2);
-
                 const start_x = current_point[0] - ((current_point[0] - backward_point[0]) / incoming_length) * radius;
                 const start_y = current_point[1] - ((current_point[1] - backward_point[1]) / incoming_length) * radius;
-
                 const end_x = current_point[0] + ((forward_point[0] - current_point[0]) / outgoing_length) * radius;
                 const end_y = current_point[1] + ((forward_point[1] - current_point[1]) / outgoing_length) * radius;
-
                 path_strings.push(`L ${start_x} ${start_y}`);
                 path_strings.push(`Q ${current_point[0]} ${current_point[1]} ${end_x} ${end_y}`);
             }
@@ -582,18 +577,15 @@ const circuit_generator = async (net_list: Net_List) => {
         const _compute_jsd = () =>
             `${Date.now().toString(16)}-${(_jsd_counter++).toString(16)}-${Math.random().toString(16).slice(2)}`;
 
-        for (let index = 0; index < components.length; index++) {
-            const component = components[index];
-            component.jsd = _compute_jsd();
+        for (const component of components) {
             const component_json: DeviceJSON = await fetch_json(
                 `/assets/json/tinkercad-circuit-generator/${component.type}.json`,
             );
+            component.jsd = _compute_jsd();
             const component_metadata = _component_metadata(component.type);
             component_json.breadboard.pos.x = component.pos[0] - component_metadata.body_box[0];
             component_json.breadboard.pos.y = component.pos[1] - component_metadata.body_box[1];
             component_json.$id = component.jsd;
-            component_json.$local_id = `Device_${index}`;
-            component_json.name = `${index}`;
             for (const terminal_json_name in component_json.terminals) {
                 const terminal_json = component_json.terminals[terminal_json_name];
                 terminal_json.$id = _compute_jsd();
@@ -638,11 +630,10 @@ const circuit_generator = async (net_list: Net_List) => {
             circuit_json.wires[wire_json.$id] = wire_json;
         };
 
-        for (let index = 0; index < components.length; index++) {
-            const component = components[index];
+        for (const component of components) {
             if (component.type == "breadboard" || component.type == "power_supply") continue;
             const terminal_names = Object.keys(_component_metadata(component.type).terminals);
-            const part_component = components[index];
+            const part_component = component;
             const board_component = _component_by_id(_part_anchor(_part_by_part_id(component.id).anchor)[1]);
             const part_json = circuit_json.devices[part_component.jsd as string];
             const board_json = circuit_json.devices[board_component.jsd as string];
@@ -660,6 +651,22 @@ const circuit_generator = async (net_list: Net_List) => {
             }
         }
 
+        for (const connection of connections) {
+            const [component_id_1, terminal_name_1] = connection.terminal_names[0].split(".");
+            const [component_id_2, terminal_name_2] = connection.terminal_names[1].split(".");
+            const component_1 = _component_by_id(component_id_1);
+            const component_2 = _component_by_id(component_id_2);
+            const component_json_1 = circuit_json.devices[component_1.jsd as string];
+            const component_json_2 = circuit_json.devices[component_2.jsd as string];
+            const component_index_1 = terminal_json_index(component_1.type, terminal_name_1);
+            const component_index_2 = terminal_json_index(component_2.type, terminal_name_2);
+            const terminal_json_1 =
+                component_json_1.terminals[Object.keys(component_json_1.terminals)[component_index_1]];
+            const terminal_json_2 =
+                component_json_2.terminals[Object.keys(component_json_2.terminals)[component_index_2]];
+            create_write_json(terminal_json_1, terminal_json_2, connection.terminals, false, connection.color);
+        }
+
         async function read() {
             await navigator.clipboard.writeText(JSON.stringify(circuit_json));
             console.log("Read");
@@ -671,7 +678,7 @@ const circuit_generator = async (net_list: Net_List) => {
                 read();
             }
         });
-        console.log(circuit_json);
+        console.log(JSON.parse(localStorage["tinkercad-circuit"]));
         normalize_svg(circuit_svg, 10, true);
     } catch (error) {
         const error_stack = (error as Error).stack?.replace(String(error), "").trim();

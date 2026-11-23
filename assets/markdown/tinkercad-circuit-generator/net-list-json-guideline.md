@@ -17,23 +17,23 @@ Net-List JSON (`net-list.json`) contains the blueprint of circuit. Learn Format 
         { "id": "LED#2", "type": "led", "anchor": "Anode@BRD#2:26" }
     ],
     "wires": [
-        ["SWT#1.1A", "IC#1.1A", "#FF0000"],
-        ["SWT#1.2A", "IC#1.1B", "#FF8800"],
-        ["SWT#1.3A", "IC#1.2B", "#00AA00"],
+        ["SWT#1.1A", "IC#1.1A", "red"],
+        ["SWT#1.2A", "IC#1.1B", "orange"],
+        ["SWT#1.3A", "IC#1.2B", "green"],
 
-        ["IC#1.1Y", "IC#1.2A", "#0000FF"],
-        ["IC#1.2Y", "LED#1.Anode", "#AA00FF"],
+        ["IC#1.1Y", "IC#1.2A", "blue"],
+        ["IC#1.2Y", "LED#1.Anode", "purple"],
 
-        ["SWT#1.1A", "IC#2.1A", "#FF0000"],
-        ["SWT#1.2A", "IC#2.1B", "#FF8800"],
+        ["SWT#1.1A", "IC#2.1A", "red"],
+        ["SWT#1.2A", "IC#2.1B", "orange"],
 
-        ["IC#1.1Y", "IC#2.2A", "#00AA00"],
-        ["SWT#1.3A", "IC#2.2B", "#0000FF"],
+        ["IC#1.1Y", "IC#2.2A", "green"],
+        ["SWT#1.3A", "IC#2.2B", "blue"],
 
-        ["IC#2.1Y", "IC#3.1A", "#AA00FF"],
-        ["IC#2.2Y", "IC#3.1B", "#FFFFFF"],
+        ["IC#2.1Y", "IC#3.1A", "purple"],
+        ["IC#2.2Y", "IC#3.1B", "white"],
 
-        ["IC#3.1Y", "LED#2.Anode", "#FFFF00"]
+        ["IC#3.1Y", "LED#2.Anode", "yellow"]
     ]
 }
 ```
@@ -42,3 +42,4 @@ Net-List JSON (`net-list.json`) contains the blueprint of circuit. Learn Format 
 
 - Format of `anchor`: `"TERMINAL_NAME@BOARD_ID:COLUMN_NUMBER"`
 - Automatic Power Connection Design. Focus Only On Logic.
+- Wire Color Must Be One Of Following - `black` , `red` , `orange` , `yellow` , `green` , `turquoise` , `blue` , `purple` , `pink` , `brown` , `grey` , `white`
