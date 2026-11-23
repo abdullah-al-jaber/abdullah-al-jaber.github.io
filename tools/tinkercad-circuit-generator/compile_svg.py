@@ -13,8 +13,8 @@ import rich.console
 import rich.traceback
 import rich_argparse
 
-DEFAULT_INPUT = "original"
-DEFAULT_OUTPUT = "image"
+DEFAULT_INPUT = "original_svg"
+DEFAULT_OUTPUT = "compile_svg"
 DEFAULT_METADATA = "metadata.json"
 
 SVGO_CONFIG = pathlib.Path(__file__).parent / "svgo.config.cjs"

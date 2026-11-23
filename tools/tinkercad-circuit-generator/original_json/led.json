@@ -1,0 +1,70 @@
+{
+    "$id": "1a20286c692-161-e1fef6ae-7096-4a17-b42f-2885bf76bade",
+    "$local_id": "Device_12",
+    "$class": "Device",
+    "name": "1",
+    "did": 58422,
+    "breadboard": {
+        "$id": "1a20286c692-163-3409cad5-a1e5-4d1f-8825-572187050ab5",
+        "$local_id": "BreadboardElement_12",
+        "$class": "BreadboardElement",
+        "pos": { "x": -263.8018042157914, "y": -83.48568685244729, "$class": "Coordinate" },
+        "angle": 0,
+        "flip": 1
+    },
+    "footprint": {
+        "$id": "1a20286c693-164-9e2a1542-aa46-4f6a-8b73-154fe4c28038",
+        "$local_id": "PCBElement_11",
+        "$class": "PCBElement",
+        "pos": { "x": 10000, "y": 10000, "$class": "Coordinate" },
+        "angle": 0,
+        "flip": 1
+    },
+    "terminals": {
+        "246538_22944_15_2023_null_202872": {
+            "$id": "1a20286c693-165-dffbad46-9b48-4072-b6e5-4930994f7e3f",
+            "$local_id": "Terminal_574",
+            "$class": "Terminal",
+            "pmid": 246538,
+            "sdid": 22944,
+            "spid": 15,
+            "ppid": 2023,
+            "bbid": 202872,
+            "endings": {},
+            "wires": {}
+        },
+        "246537_22944_14_2022_null_202873": {
+            "$id": "1a20286c693-166-224d272f-3cdd-45ad-834d-aedf43bc42aa",
+            "$local_id": "Terminal_575",
+            "$class": "Terminal",
+            "pmid": 246537,
+            "sdid": 22944,
+            "spid": 14,
+            "ppid": 2022,
+            "bbid": 202873,
+            "endings": {},
+            "wires": {}
+        }
+    },
+    "subdevice": {
+        "22944": {
+            "$id": "1a20286c692-162-94ca628f-51bb-4747-943d-03ddf59274d1",
+            "$local_id": "SchematicElement_11",
+            "$class": "SchematicElement",
+            "pos": { "x": 550, "y": 0, "$class": "Coordinate" },
+            "angle": 0,
+            "flip": 1,
+            "sdid": 22944
+        }
+    },
+    "properties": {
+        "283": {
+            "id": 283,
+            "name": "color",
+            "unit": "[[\"green\",\"Green\"],[\"yellow\",\"Yellow\"],[\"orange\",\"Orange\"],[\"blue\",\"Blue\"],[\"red\",\"Red\"],[\"white\",\"White\"]]",
+            "value": 650,
+            "show": null,
+            "prefix": "red"
+        }
+    }
+}
