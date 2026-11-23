@@ -312,35 +312,35 @@ const circuit_generator = async (net_list) => {
         for (const [x, temp] of board_grid)
             for (const [y, board] of temp) {
                 const current_board_component = _component_by_id(board.id);
-                _board_connection(current_board_component, current_board_component, "X30", "Z30", "#000", 40);
+                _board_connection(current_board_component, current_board_component, "X30", "Z30", "black", 40);
                 if (x == 0 && y == 0) {
                     const power_component = components[0];
-                    _board_connection(power_component, current_board_component, "Negative", "X1", "#000");
+                    _board_connection(power_component, current_board_component, "Negative", "X1", "black");
                 }
                 else if (x != 0 && y == 0) {
                     const target_board_component = _component_by_id(board_grid.get(x - 1)?.get(0)?.id);
-                    _board_connection(current_board_component, target_board_component, "Z1", "Z30", "#000", 0);
+                    _board_connection(current_board_component, target_board_component, "Z1", "Z30", "black", 0);
                 }
                 else {
                     const target_board_component = _component_by_id(board_grid.get(x)?.get(y - 1)?.id);
-                    _board_connection(current_board_component, target_board_component, "Z30", "X30", "#000", 40);
+                    _board_connection(current_board_component, target_board_component, "Z30", "X30", "black", 40);
                 }
             }
         for (const [x, temp] of board_grid)
             for (const [y, board] of temp) {
                 const current_board_component = _component_by_id(board.id);
-                _board_connection(current_board_component, current_board_component, "W30", "Y30", "#F00", 30);
+                _board_connection(current_board_component, current_board_component, "W30", "Y30", "red", 30);
                 if (x == 0 && y == 0) {
                     const power_component = components[0];
-                    _board_connection(power_component, current_board_component, "Positive", "W1", "#F00");
+                    _board_connection(power_component, current_board_component, "Positive", "W1", "red");
                 }
                 else if (x != 0 && y == 0) {
                     const target_board_component = _component_by_id(board_grid.get(x - 1)?.get(0)?.id);
-                    _board_connection(current_board_component, target_board_component, "Y1", "Y30", "#F00", 0);
+                    _board_connection(current_board_component, target_board_component, "Y1", "Y30", "red", 0);
                 }
                 else {
                     const target_board_component = _component_by_id(board_grid.get(x)?.get(y - 1)?.id);
-                    _board_connection(current_board_component, target_board_component, "Y30", "W30", "#F00", 30);
+                    _board_connection(current_board_component, target_board_component, "Y30", "W30", "red", 30);
                 }
             }
         const _board_terminal_name = (board_component, query_terminal) => {
@@ -377,14 +377,14 @@ const circuit_generator = async (net_list) => {
             const board_component = _component_by_id(_part_anchor(part.anchor)[1]);
             const part_component = _component_by_id(part.id);
             if (part.type == "led") {
-                power_part_connection(board_component, part_component, "Cathode", "#000", "Z");
+                power_part_connection(board_component, part_component, "Cathode", "black", "Z");
             }
             else if (part.type.startsWith("ic")) {
-                power_part_connection(board_component, part_component, "GND", "#000", "X");
-                power_part_connection(board_component, part_component, "Vcc", "#F00", "Y");
+                power_part_connection(board_component, part_component, "GND", "black", "X");
+                power_part_connection(board_component, part_component, "Vcc", "red", "Y");
             }
             else if (part.type.startsWith("switch")) {
-                const terminal = power_part_connection(board_component, part_component, "1B", "#F00", "Y")[0];
+                const terminal = power_part_connection(board_component, part_component, "1B", "red", "Y")[0];
                 const switch_size = part.type.match(/dip_\d+$/)?.[0];
                 const switch_span = { dip_4: 3, dip_6: 5 }[switch_size ?? ""];
                 if (switch_span === undefined)
@@ -394,7 +394,7 @@ const circuit_generator = async (net_list) => {
                     const row_string = offset % 2 === 0 ? "I" : "J";
                     const terminal_name_1 = `${row_string}${column_number + offset}`;
                     const terminal_name_2 = `${row_string}${column_number + offset + 1}`;
-                    _board_connection(board_component, board_component, terminal_name_1, terminal_name_2, "#F00");
+                    _board_connection(board_component, board_component, terminal_name_1, terminal_name_2, "red");
                 });
             }
         }
