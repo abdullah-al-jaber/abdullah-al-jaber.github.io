@@ -41,5 +41,28 @@ Net-List JSON (`net-list.json`) contains the blueprint of circuit. Learn Format 
 **Notes :**
 
 - Format of `anchor`: `"TERMINAL_NAME@BOARD_ID:COLUMN_NUMBER"`
-- Automatic Power Connection Design. Focus Only On Logic.
-- Wire Color Must Be One Of Following - `black` , `red` , `orange` , `yellow` , `green` , `turquoise` , `blue` , `purple` , `pink` , `brown` , `grey` , `white`
+- Automatic Power Connection Design. Focus Only On Logical Wiring.
+- Wire Color Must Be One Of Following - `black` , `red` , `orange` , `yellow` , `green` , `turquoise` , `blue` , `purple` , `pink` , `brown` , `grey` , `white`.
+- Board Have 30 Columns. Enough Spacing Between Parts Are Preferred.
+- Following Are Parts And Terminals Available -
+
+```json
+{
+    "ic_74hc00": ["1A", "1B", "1Y", "2A", "2B", "2Y", "GND", "3Y", "3A", "3B", "4Y", "4A", "4B", "Vcc"],
+    "ic_74hc02": ["1Y", "1A", "1B", "2Y", "2A", "2B", "GND", "3A", "3B", "3Y", "4A", "4B", "4Y", "Vcc"],
+    "ic_74hc04": ["1A", "1Y", "2A", "2Y", "3A", "3Y", "GND", "4Y", "4A", "5Y", "5A", "6Y", "6A", "Vcc"],
+    "ic_74hc08": ["1A", "1B", "1Y", "2A", "2B", "2Y", "GND", "3Y", "3A", "3B", "4Y", "4A", "4B", "Vcc"],
+    "ic_74hc10": ["1A", "1B", "2A", "2B", "2C", "2Y", "GND", "3Y", "3A", "3B", "3C", "1Y", "1C", "Vcc"],
+    "ic_74hc11": ["1A", "1B", "2A", "2B", "2C", "2Y", "GND", "3Y", "3A", "3B", "3C", "1Y", "1C", "Vcc"],
+    "ic_74hc20": ["1A", "1B", "NC", "1C", "1D", "1Y", "GND", "2Y", "2A", "2B", "NC1", "2C", "2D", "Vcc"],
+    "ic_74hc21": ["1A", "1B", "NC", "1C", "1D", "1Y", "GND", "2Y", "2A", "2B", "NC1", "2C", "2D", "Vcc"],
+    "ic_74hc27": ["1A", "1B", "2A", "2B", "2C", "2Y", "GND", "3Y", "3A", "3B", "3C", "1Y", "1C", "Vcc"],
+    "ic_74hc32": ["1A", "1B", "1Y", "2A", "2B", "2Y", "GND", "3Y", "3A", "3B", "4Y", "4A", "4B", "Vcc"],
+    "ic_74hc86": ["1A", "1B", "1Y", "2A", "2B", "2Y", "GND", "3Y", "3A", "3B", "4Y", "4A", "4B", "Vcc"],
+    "switch_dip_6": ["1B", "2B", "3B", "4B", "5B", "6B", "1A", "2A", "3A", "4A", "5A", "6A"],
+    "switch_dip_4": ["1B", "2B", "3B", "4B", "1A", "2A", "3A", "4A"],
+    "led": ["Cathode", "Anode"]
+}
+```
+
+- Although Wires Between Board Terminals (Not Given Above) Are Supported, They Are Discouraged. Board Have [`A` , `B` , `C` , `D` , `E`] (BOTTOM ROWS) [`F` , `G` , `H` , `I` , `J`] (TOP ROWS). Board Have [`1` - `30`] Columns.
