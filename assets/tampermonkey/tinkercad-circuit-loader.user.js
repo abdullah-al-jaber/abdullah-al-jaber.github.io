@@ -1,16 +1,16 @@
 // ==UserScript==
-// @name         Tinkercad Circuit Loader
-// @namespace    https://tampermonkey.net/
+// @name         TinkerCAD Circuit Loader
+// @namespace    https://abdullah-al-jaber.github.io/
 // @version      2.4
 // @author       Abdullah Al Jaber
-// @description  Yay, Fun Tinkercad Circuit Loader That Solves the Pains
-// @match        https://*.tinkercad.com/things/*
+// @description  Loads Circuit JSON File InTo TinkerCAD
+// @match        https://*.TinkerCAD.com/things/*
 // @run-at       document-idle
 // @grant        none
 // ==/UserScript==
 (function () {
     "use strict";
-    const storage_key = "circuitClipboard";
+    const local_storage_key = "circuitClipboard";
     const ask_for_upload = () =>
         new Promise((resolve) => {
             const file_input = document.createElement("input");
@@ -33,14 +33,14 @@
             document.body.appendChild(file_input);
             file_input.click();
         });
-    async function load_circuit() {
-        const json_string = await ask_for_upload();
+    async function load_circuit(json_string = null) {
+        if (json_string == null) json_string = await ask_for_upload();
         if (!json_string || !json_string.trim()) {
-            console.log("[Tinkercad Circuit Loader] NOTHING TO SAVE!");
+            console.log("[TinkerCAD Circuit Loader] NOTHING TO SAVE!");
             return false;
         }
-        localStorage.setItem(storage_key, json_string);
-        console.log(`[Tinkercad Circuit Loader] SAVED TO LOCAL STORAGE KEY ${storage_key.toUpperCase()}!`);
+        localStorage.setItem(local_storage_key, json_string);
+        console.log(`[TinkerCAD Circuit Loader] LOAD TO LOCAL STORAGE KEY - '${local_storage_key}' !`);
         return true;
     }
     const upload_button = document.createElement("button");
@@ -112,5 +112,11 @@
         Object.assign(upload_button.style, { transform: "translateY(-3px)" }),
     );
     upload_button.addEventListener("click", async () => show_result(await load_circuit()));
+    document.addEventListener("keydown", async (event) => {
+        if (event.ctrlKey && event.altKey && !event.shiftKey && !event.metaKey && event.code === "KeyJ") {
+            event.preventDefault();
+            show_result(await load_circuit(await navigator.clipboard.readText()));
+        }
+    });
     document.body.appendChild(upload_button);
 })();

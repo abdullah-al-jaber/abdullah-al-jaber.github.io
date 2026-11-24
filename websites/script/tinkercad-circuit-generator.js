@@ -39,6 +39,14 @@ drop_zone.addEventListener("dragover", (event) => {
     drop_zone.classList.add("drag-over");
 });
 drop_zone.addEventListener("dragleave", () => drop_zone.classList.remove("drag-over"));
+document.addEventListener("keydown", async (event) => {
+    if (event.ctrlKey && event.altKey && !event.shiftKey && !event.metaKey && event.code === "KeyJ") {
+        event.preventDefault();
+        const clipboard_text = await navigator.clipboard.readText();
+        handle_file(new File([clipboard_text], "clipboard.json", { type: "application/json" }));
+        await navigator.clipboard.writeText(localStorage.getItem("tinkercad-circuit") ?? "");
+    }
+});
 const svg_to_canvas = async (svg, canvas) => {
     const xml = new XMLSerializer().serializeToString(svg);
     const url = URL.createObjectURL(new Blob([xml], { type: "image/svg+xml;charset=utf-8" }));
