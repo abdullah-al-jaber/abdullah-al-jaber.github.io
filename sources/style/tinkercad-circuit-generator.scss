@@ -19,7 +19,6 @@ $warning-bg: #fff4e0;
 * {
     box-sizing: border-box;
     cursor: default !important;
-    user-select: none;
 }
 
 span.icon {
@@ -37,7 +36,6 @@ code {
     font-family: "Fira Code", monospace;
     font-size: 85%;
     white-space: break-spaces;
-    user-select: text;
 }
 
 body {

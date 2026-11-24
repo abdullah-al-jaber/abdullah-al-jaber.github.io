@@ -65,4 +65,4 @@ Net-List JSON (`net-list.json`) contains the blueprint of circuit. Learn Format 
 }
 ```
 
-- Although Wires Between Board Terminals (Not Given Above) Are Supported, They Are Discouraged. Board Have [`A` , `B` , `C` , `D` , `E`] (BOTTOM ROWS) [`F` , `G` , `H` , `I` , `J`] (TOP ROWS). Board Have [`1` - `30`] Columns.
+- Although Wires Between Board Terminals (Not Given Above) Are Supported, They Are Discouraged. Board Have [`A` , `B` , `C` , `D` , `E`] (Bottom Row) [`F` , `G` , `H` , `I` , `J`] (Top Row). Board Have [`1` - `30`] Columns.
